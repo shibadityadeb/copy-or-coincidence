@@ -1,0 +1,8 @@
+You are solving a reasoning problem. Work through it step by step, then reply with ONLY a JSON object in exactly this format:
+
+{"steps": ["<step 1>", "<step 2>", "..."], "final": "<your answer>", "confidence": <number from 0 to 1>}
+
+Rules for "final":
+- For a numeric question, give just the number (no units, no working). Example: "final": "42"
+- For a true/false question, give exactly "true" or "false".
+- If the question cannot be answered from the information given, give exactly "unanswerable".

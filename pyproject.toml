@@ -1,0 +1,16 @@
+[project]
+name = "excess-error-correlation"
+version = "0.1.0"
+description = "Item-conditioned null models for error correlation in multi-agent LLM systems"
+requires-python = ">=3.11"
+dependencies = ["datasets", "numpy", "pandas", "pydantic>=2", "pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["cep/tests"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["cep*"]

@@ -1,0 +1,42 @@
+{
+  "version": "cep_v1",
+  "seed": 0,
+  "n_items": 300,
+  "items_sha256": "5a825d4f303ebccf8f0a11cdc39ce71ff7ca5bef478f1d29476a20e2c02c8656",
+  "normalizer_version": "1",
+  "parser_version": "1",
+  "checker_version": "f7805da13b9b",
+  "sources": {
+    "qintongli/GSM-Plus": "3b708db57b96a16e8e3368ed2956990c0809440e",
+    "renma/ProntoQA": "6f3e03863ce763efd1f9cd11aacf4caff1b7af02"
+  },
+  "by_family": {
+    "lure": 100,
+    "logic": 100,
+    "math": 100
+  },
+  "by_template": {
+    "bat_ball": 10,
+    "widgets": 10,
+    "doubling": 10,
+    "overtaking": 10,
+    "siblings": 10,
+    "percent_round_trip": 10,
+    "average_speed": 10,
+    "fence_posts": 10,
+    "stairs": 10,
+    "clock_strikes": 10,
+    "prontoqa_fictional": 50,
+    "false_ontology": 50,
+    "gsm_missing_premise": 50,
+    "gsm_distractor": 50
+  },
+  "by_cause": {
+    "intuitive_lure": 100,
+    "deduction_slip": 50,
+    "prior_override": 50,
+    "missing_premise": 50,
+    "distractor": 50
+  },
+  "with_lure": 200
+}

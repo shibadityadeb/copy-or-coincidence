@@ -1,0 +1,405 @@
+<title>Same Wrong Answer Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: single reading column (~720px) like a lab notebook; wider bands for the flowchart and tables. */
+:root {
+  --bg: #f3f6f7;
+  --surface: #ffffff;
+  --ink: #15212b;
+  --muted: #56646f;
+  --line: #d5dde2;
+  --accent: #1d6a86;      /* the "method" colour */
+  --agentA: #2f6fd0;
+  --agentB: #a83d80;
+  --lure: #b86e12;        /* wrong-but-tempting answer */
+  --good: #2c7a4b;
+  --bad: #b3372f;
+  --tint: #e6eff2;
+  --lureTint: #fbefdf;
+  --goodTint: #e3f1e8;
+  --badTint: #f8e4e2;
+  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10171d; --surface: #172129; --ink: #e4ebef; --muted: #9aa9b3; --line: #2b3943;
+    --accent: #5eb4d2; --agentA: #7aa8f0; --agentB: #e07fbd; --lure: #eba24c; --good: #6cc48f; --bad: #ec7d74;
+    --tint: #1b2d36; --lureTint: #33271a; --goodTint: #19302a; --badTint: #362020; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10171d; --surface: #172129; --ink: #e4ebef; --muted: #9aa9b3; --line: #2b3943;
+  --accent: #5eb4d2; --agentA: #7aa8f0; --agentB: #e07fbd; --lure: #eba24c; --good: #6cc48f; --bad: #ec7d74;
+  --tint: #1b2d36; --lureTint: #33271a; --goodTint: #19302a; --badTint: #362020; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; padding-inline: 16px; padding-block: 0 64px; }
+.wrap { max-width: 760px; margin: 0 auto; }
+.wide { max-width: 1040px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.2rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.7rem; font-weight: 700; }
+h3 { font-size: 1.15rem; font-weight: 700; }
+p { margin: 0; }
+code, .mono { font-family: var(--mono); font-size: 0.85em; }
+.eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+section { padding-block: 44px 8px; display: grid; gap: 16px; }
+.muted { color: var(--muted); }
+.A { color: var(--agentA); font-weight: 700; }
+.B { color: var(--agentB); font-weight: 700; }
+.lure { color: var(--lure); font-weight: 700; }
+
+header { padding-block: 56px 8px; display: grid; gap: 18px; }
+.lede { font-size: 1.2rem; color: var(--muted); max-width: 62ch; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+nav.toc a { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; background: var(--surface); }
+nav.toc a:hover, nav.toc a:focus-visible { border-color: var(--accent); outline: none; }
+
+.ps { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 6px; padding: 20px 22px; font-size: 1.15rem; }
+.ps strong { font-family: var(--display); }
+
+/* classroom analogy */
+.analogy { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.card h3 { font-size: 1.02rem; }
+.tag { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* the trap demo */
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 16px; }
+.demo label { font-weight: 700; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.demo input[type=range] { width: 100%; accent-color: var(--accent); }
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: minmax(120px, 210px) 1fr 56px; gap: 10px; align-items: center; font-size: 0.92rem; }
+.track { height: 20px; background: var(--tint); border-radius: 4px; overflow: hidden; }
+.fill { height: 100%; border-radius: 4px; transition: width .25s ease; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.verdict { padding: 12px 14px; border-radius: 6px; font-size: 0.95rem; }
+@media (max-width: 520px) { .bar { grid-template-columns: 1fr 52px; } .bar .track { grid-column: 1 / -1; grid-row: 2; } }
+
+/* glossary */
+dl.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 10px 18px; margin: 0; }
+dl.gloss dt { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; color: var(--accent); padding-top: 3px; }
+dl.gloss dd { margin: 0; }
+@media (max-width: 560px) { dl.gloss { grid-template-columns: 1fr; gap: 2px; } dl.gloss dd { margin-bottom: 10px; } }
+
+/* flowchart */
+.flow { display: grid; gap: 0; justify-items: center; }
+.stage { width: 100%; max-width: 760px; display: grid; grid-template-columns: 42px 1fr; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.stage .n { font-family: var(--mono); font-weight: 600; font-size: 0.85rem; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--tint); color: var(--accent); }
+.stage .body { display: grid; gap: 4px; min-width: 0; }
+.stage .out { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+.stage.gate { border-color: var(--good); border-style: dashed; }
+.stage.gate .n { background: var(--goodTint); color: var(--good); }
+.stage.core { border: 2px solid var(--accent); }
+.arrow { width: 2px; height: 26px; background: var(--line); position: relative; }
+.arrow::after { content: ""; position: absolute; bottom: -1px; left: -5px; border: 6px solid transparent; border-top-color: var(--line); border-bottom: 0; }
+.fail { font-size: 0.85rem; color: var(--bad); font-family: var(--mono); }
+.split { width: 100%; max-width: 760px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.split .card { font-size: 0.93rem; }
+@media (max-width: 640px) { .split { grid-template-columns: 1fr; } }
+
+/* tables */
+.tbl { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; min-width: 560px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+td.k { font-family: var(--mono); font-weight: 600; color: var(--accent); white-space: nowrap; }
+tr.hl td { background: var(--tint); }
+
+/* two cols */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .two { grid-template-columns: 1fr; } }
+.yes { border-top: 4px solid var(--good); }
+.no { border-top: 4px solid var(--bad); }
+ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+
+/* timeline */
+.months { display: grid; gap: 10px; }
+.month { display: grid; grid-template-columns: 70px 1fr; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.month .m { font-family: var(--display); font-weight: 700; font-size: 1.5rem; color: var(--accent); line-height: 1; }
+.month .m small { display: block; font-family: var(--mono); font-size: 0.68rem; font-weight: 400; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 4px; }
+.month .gatebox { margin-top: 6px; font-size: 0.88rem; background: var(--goodTint); border-radius: 5px; padding: 6px 10px; }
+.month > div { min-width: 0; }
+
+.callout { background: var(--lureTint); border-radius: 8px; padding: 14px 18px; }
+.foot { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 0.88rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .fill { transition: none; } }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Plain-language guide · based on the 18-page field guide</span>
+  <h1>When two AI agents give the <span class="lure">same wrong answer</span>, is it a coincidence?</h1>
+  <p class="lede">This page explains the project in everyday words: the problem, why the obvious approach is wrong, what we will build and run, step by step, and what we can and cannot conclude at the end.</p>
+  <nav class="toc" aria-label="Sections">
+    <a href="#problem">The problem</a><a href="#trap">The trap</a><a href="#words">Key words</a><a href="#questions">Two questions</a><a href="#flow">Flowchart</a><a href="#experiments">Experiments</a><a href="#controls">Controls</a><a href="#reading">Reading results</a><a href="#conclude">Conclusions</a><a href="#plan">6-month plan</a><a href="#checklist">Pitfalls</a>
+  </nav>
+</header>
+
+<section id="problem">
+  <span class="eyebrow">1 · Problem statement</span>
+  <h2>What are we actually trying to find out?</h2>
+  <div class="ps"><strong>In one sentence:</strong> when several AI agents work together and end up wrong in the same way, how much of that would have happened anyway (because they each would have made that mistake alone), and how much is caused by them talking to each other?</div>
+  <p>Think of two students in an exam who both write the same wrong answer on question 17. There are three very different stories:</p>
+  <div class="analogy">
+    <div class="card"><span class="tag" style="color:var(--muted)">Story 1</span><h3>Q17 was just hard</h3><p>Most students got it wrong. Both failing it tells you nothing about them.</p></div>
+    <div class="card"><span class="tag" style="color:var(--lure)">Story 2</span><h3>Same blind spot</h3><p>Q17 had a tempting trap answer and both fell for it on their own. They think alike, but nobody copied.</p></div>
+    <div class="card"><span class="tag" style="color:var(--bad)">Story 3</span><h3>One copied the other</h3><p>Student B would have been right, but looked at A's paper and switched. <em>This</em> is the damage caused by interaction.</p></div>
+  </div>
+  <p>Many papers see "both wrong" and jump to Story 3. The project's whole job is to measure <strong>how much is left over after Stories 1 and 2 are accounted for</strong>. That leftover is called the <strong>residual</strong>.</p>
+</section>
+
+<section id="trap">
+  <span class="eyebrow">2 · The trap everyone falls into</span>
+  <h2>Why "9% vs 5%" can mean nothing</h2>
+  <p>Say agent <span class="A">A</span> is wrong 20% of the time and agent <span class="B">B</span> 25%. The naive math says they should both be wrong together 20% × 25% = <strong>5%</strong> of the time. You observe <strong>9%</strong>. Proof they influence each other?</p>
+  <p>No. Hard questions are hard for <em>both</em> of them. If they both fail the same tough questions, they will be "wrong together" far more than 5% even if they never talk. Move the slider to see how much of the gap is explained just by questions varying in difficulty.</p>
+  <div class="demo">
+    <label for="sd"><span>How much do questions vary in difficulty?</span><span class="mono" id="sdv">0.18</span></label>
+    <input id="sd" type="range" min="0" max="0.30" step="0.01" value="0.18" aria-describedby="sdhelp">
+    <p id="sdhelp" class="muted" style="font-size:.85rem">0 = every question equally hard. 0.18 = quite ordinary for LLM benchmarks, where many questions are either always right or always wrong.</p>
+    <div class="bars">
+      <div class="bar"><span>Naive guess (ignores difficulty)</span><div class="track"><div class="fill" id="f1" style="background:var(--muted)"></div></div><span class="num" id="n1">5.0%</span></div>
+      <div class="bar"><span>Expected from difficulty alone</span><div class="track"><div class="fill" id="f2" style="background:var(--accent)"></div></div><span class="num" id="n2">9.1%</span></div>
+      <div class="bar"><span>What you observed</span><div class="track"><div class="fill" id="f3" style="background:var(--lure)"></div></div><span class="num">9.0%</span></div>
+    </div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+  <p class="muted">This is the key idea from Eckhardt &amp; Lee (1985), originally about software built by independent teams. The fix: compare against what each agent does <strong>on each specific question</strong>, not its overall average.</p>
+</section>
+
+<section id="words">
+  <span class="eyebrow">3 · Vocabulary</span>
+  <h2>Words you'll see all the time</h2>
+  <dl class="gloss">
+    <dt>agent</dt><dd>One model + its prompt + its settings + its role. Two agents can be the same model with different prompts.</dd>
+    <dt>item</dt><dd>One test question.</dd>
+    <dt>lure</dt><dd>The tempting wrong answer a question is designed to have (like the intuitive but wrong answer in a trick question).</dd>
+    <dt>answer profile</dt><dd>Ask an agent the same question 20 times alone. The spread of its answers (e.g. 60% "12", 30% "10", 10% other) is its profile for that question.</dd>
+    <dt>null model</dt><dd>The "nothing interesting is happening" prediction. We compute what should happen if agents do not affect each other, then compare to reality.</dd>
+    <dt>residual (Δ)</dt><dd>Observed minus expected. The part the null model cannot explain. This is the finding.</dd>
+    <dt>permutation test</dt><dd>Shuffle which of B's answers is paired with which of A's (within the same question) many times. If the real result looks like the shuffled ones, there's no real link.</dd>
+    <dt>helpful / harmful flip</dt><dd>B changes from wrong to right after seeing A (helpful), or from right to wrong (harmful). If both happen about equally, B is just copying, not thinking.</dd>
+    <dt>contested item</dt><dd>A question where the agents don't have one strongly preferred answer. Interesting things only happen here.</dd>
+  </dl>
+</section>
+
+<section id="questions">
+  <span class="eyebrow">4 · The refined research question</span>
+  <h2>It splits into two questions</h2>
+  <div class="two">
+    <div class="card"><span class="tag" style="color:var(--accent)">Q1 · Similarity</span><h3>Do the agents think alike?</h3><p>Working completely alone, how similar are their answer profiles? Does it depend on whether they come from the same model family, and on what kind of mistake it is?</p><p class="muted" style="font-size:.9rem">Stories 1 and 2. No talking involved.</p></div>
+    <div class="card"><span class="tag" style="color:var(--bad)">Q2 · Dependence</span><h3>Does talking make them converge?</h3><p>When agents see each other's answers, do they agree more than their solo profiles predict? Towards the truth or towards the lure? And why: copying, a chain reaction, or failing to spot the error?</p><p class="muted" style="font-size:.9rem">Story 3. The main contribution.</p></div>
+  </div>
+  <p>Why an error survives also has three different causes, and they need different fixes:</p>
+  <div class="analogy">
+    <div class="card"><h3>Couldn't see it</h3><p>The checker shares the same blind spot, so the mistake looks fine.</p><p class="muted" style="font-size:.9rem">Fix: use a more different checker.</p></div>
+    <div class="card"><h3>Was talked out of it</h3><p>The checker was right, then gave in to the peer (conformity).</p><p class="muted" style="font-size:.9rem">Fix: protect independent opinions.</p></div>
+    <div class="card"><h3>Saw it, couldn't fix it</h3><p>Knew something was off but couldn't repair it.</p><p class="muted" style="font-size:.9rem">Fix: point to the exact faulty step.</p></div>
+  </div>
+</section>
+</div>
+
+<section id="flow" class="wide">
+  <div class="wrap" style="display:grid;gap:16px;width:100%">
+    <span class="eyebrow">5 · The process</span>
+    <h2>The whole pipeline as a flowchart</h2>
+    <p>Each box is a step. Green dashed boxes are <strong>gates</strong>: if the check fails, stop and fix before moving on.</p>
+  </div>
+  <div class="flow">
+    <div class="stage"><span class="n">1</span><div class="body"><h3>Build the test set ("Correlated Error Probe")</h3><p>~600 fresh, auto-generated questions so the models haven't seen them before. Four kinds: trick questions with lures, logic puzzles, math with distractors or missing info, and constraint puzzles. Each question stores its correct answer, its lure, and <em>why</em> it's designed to cause errors.</p><span class="out">output → datasets/cep_v1</span></div></div>
+    <div class="arrow"></div>
+    <div class="stage"><span class="n">2</span><div class="body"><h3>Build automatic answer checkers</h3><p>Code (not an AI judge) decides if an answer is right, which error type it is, and whether it hit the lure. An AI judge would share the agents' blind spots and fake the very effect we're measuring.</p><span class="out">output → checkers + tests</span></div></div>
+    <div class="arrow"></div>
+    <div class="stage gate"><span class="n">✓</span><div class="body"><h3>Gate: are the checkers trustworthy?</h3><p>Compare against 150 answers you label by hand. Need ≥95% agreement on right/wrong and ≥85% on error type. Then freeze the checker.</p></div></div>
+    <div class="arrow"></div>
+    <div class="stage"><span class="n">3</span><div class="body"><h3>Layer 0: every agent answers alone, 20 times per question</h3><p>No communication. This gives each agent's <strong>answer profile</strong> for every question. Everything else is compared against this.</p><span class="out">output → per-question answer profiles</span></div></div>
+    <div class="arrow"></div>
+    <div class="stage gate"><span class="n">✓</span><div class="body"><h3>Gate: Experiment 1, the "should be zero" test</h3><p>Pair two agents that definitely don't communicate. The residual <strong>must</strong> come out ≈ 0. If it doesn't, the pipeline has a bug. (The naive method would wrongly show "excess" here, which proves the point.)</p></div></div>
+    <div class="arrow"></div>
+    <div class="stage core"><span class="n">4</span><div class="body"><h3>Let them interact (the core experiment)</h3><p><span class="A">A</span> answers, <span class="B">B</span> sees A's answer and then answers. Also the reverse order (B→A), and a control where B sees a <em>random</em> answer. Each run repeated 5 times per question.</p><span class="out">output → paired answers, logged row by row</span></div></div>
+    <div class="arrow"></div>
+    <div class="stage"><span class="n">5</span><div class="body"><h3>Compare observed vs expected</h3><p><strong>Expected</strong> = how often they'd match if B just answered from its own solo profile. <strong>Observed</strong> = how often they actually matched after interacting. Difference = residual. Permutation test says if it's real.</p></div></div>
+    <div class="arrow"></div>
+    <div class="stage"><span class="n">6</span><div class="body"><h3>Break the residual down</h3>
+      <div class="split" style="margin-top:6px">
+        <div class="card"><h3>Which direction?</h3><p>Did they converge on the truth or on the lure?</p></div>
+        <div class="card"><h3>Copying or thinking?</h3><p>Helpful vs harmful flips; does a random answer move B just as much?</p></div>
+        <div class="card"><h3>Does order matter?</h3><p>If A→B differs from B→A, whoever speaks first wins: a cascade.</p></div>
+      </div></div></div>
+    <div class="arrow"></div>
+    <div class="stage"><span class="n">7</span><div class="body"><h3>Statistics and write-up</h3><p>Confidence intervals by resampling questions, a mixed model that accounts for question difficulty, pre-registered hypotheses. Then: "here's how much of the joint error is explained by the agents' own behaviour, here's how much isn't, and here's why."</p></div></div>
+  </div>
+</section>
+
+<div class="wrap">
+<section id="experiments">
+  <span class="eyebrow">6 · The experiment ladder</span>
+  <h2>Eleven experiments, simplest first</h2>
+  <p>Always run the "alone" condition first, change one thing at a time, same questions every time. Highlighted rows are the minimum viable project.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Name</th><th>What it asks, in plain words</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td class="k">0</td><td>Sanity</td><td>Does the setup run reliably and give the same results if re-run?</td></tr>
+      <tr class="hl"><td class="k">1</td><td>Independent duplicates</td><td>Two non-talking agents: does our method correctly report zero? (Calibration, not a finding.)</td></tr>
+      <tr><td class="k">2</td><td>Prompt diversity</td><td>Do different prompts make the same model think less alike?</td></tr>
+      <tr><td class="k">3</td><td>Temperature</td><td>How does randomness setting change answer spread? (Just to fix it, not a result.)</td></tr>
+      <tr><td class="k">4</td><td>Family diversity</td><td>Are models from different companies less alike, at the same skill level?</td></tr>
+      <tr><td class="k">5</td><td>Size ladder</td><td>Do bigger models share more mistakes, or fewer?</td></tr>
+      <tr><td class="k">6</td><td>Shared evidence</td><td>If both read the same misleading passage, do they fall for the same lure?</td></tr>
+      <tr class="hl"><td class="k">7</td><td>Sequential exposure ★</td><td>B sees A's answer. Does B converge beyond prediction, which way, and why? <strong>The core experiment.</strong></td></tr>
+      <tr><td class="k">8</td><td>Debate</td><td>Multiple rounds of discussion: amplify errors, fix them, or just land on the majority?</td></tr>
+      <tr><td class="k">9</td><td>Solver + verifier</td><td>When can a checker agent catch and fix another's mistake? Depends on family? Error type?</td></tr>
+      <tr><td class="k">10</td><td>Synthetic failure</td><td>Are "shared blind spot" errors and "careless slip" errors spread in opposite ways?</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="controls">
+  <span class="eyebrow">7 · Proving cause</span>
+  <h2>Control conditions: what B gets to see</h2>
+  <p>Just adding <em>any</em> message to B's prompt can change its answer. These variations separate "B was influenced by A's content" from "B's prompt just got longer".</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Code</th><th>B sees</th><th>Tells us</th></tr></thead>
+    <tbody>
+      <tr><td class="k">A</td><td>Nothing</td><td>B's normal behaviour (baseline)</td></tr>
+      <tr><td class="k">B</td><td>A's real answer (+ steps)</td><td>Total effect of seeing A</td></tr>
+      <tr class="hl"><td class="k">C</td><td>A random answer in A's style</td><td>Blind copying: does B follow <em>anything</em> a peer says?</td></tr>
+      <tr><td class="k">D</td><td>Answer from a different model</td><td>Does it matter who the peer is?</td></tr>
+      <tr><td class="k">E</td><td>A's reasoning with the answer hidden</td><td>Effect of the reasoning alone</td></tr>
+      <tr><td class="k">F</td><td>A's steps but the conclusion flipped</td><td>Does B follow the argument or just the conclusion?</td></tr>
+      <tr><td class="k">G</td><td>A's answer with high vs low confidence</td><td>Does sounding confident persuade B?</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="reading">
+  <span class="eyebrow">8 · Reading the results</span>
+  <h2>If you see this, it means that</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>You observe</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>Non-talking agents wrong together more than naive math says</td><td>Normal. Just difficulty. Our residual should be ≈ 0 here.</td></tr>
+      <tr><td>Big match residual, but <em>not</em> toward the lure</td><td>B copies whatever A said. Copying, not a shared blind spot.</td></tr>
+      <tr><td>Big residual toward the lure</td><td>Interaction pushes both towards the tempting wrong answer.</td></tr>
+      <tr><td>A→B gives different results from B→A</td><td>Whoever goes first wins: a cascade.</td></tr>
+      <tr><td>B flips regardless of whether A's argument is valid</td><td>B follows conclusions, not reasoning.</td></tr>
+      <tr><td>Helpful flips ≈ harmful flips</td><td>B isn't evaluating, it's copying.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="callout">Other things that can fake a positive result: B copying A's <em>formatting</em> so answers look identical, A's message restating the question more clearly, or simply a longer prompt. The controls above rule these out.</p>
+</section>
+
+<section id="conclude">
+  <span class="eyebrow">9 · Conclusions</span>
+  <h2>What the minimum project can and can't tell us</h2>
+  <p><strong>MVP setup:</strong> Qwen3.5-4B as both agents, 300 questions (100 trick, 100 logic, 100 math), 20 solo samples each, protocols: alone, A→B, B→A, random-answer control, 5 runs each. About 12M tokens, two Kaggle sessions.</p>
+  <div class="two">
+    <div class="card yes"><h3>It CAN conclude</h3><ul>
+      <li>Whether seeing a peer's answer creates agreement beyond what each agent does alone</li>
+      <li>How much of that is blind copying</li>
+      <li>Whether the convergence heads toward the lure</li>
+      <li>Whether it differs by error type</li>
+    </ul></div>
+    <div class="card no"><h3>It CAN'T conclude</h3><ul>
+      <li>Anything about model family / lineage</li>
+      <li>Whether failures are about detecting vs repairing</li>
+      <li>Whether longer chains cause cascades</li>
+    </ul><p class="muted" style="font-size:.9rem">These come in the expansion stages.</p></div>
+  </div>
+  <div class="two">
+    <div class="card yes"><h3>Counts as a contribution</h3><ul>
+      <li>A validated method that gives zero for non-talking agents and a replicated residual under interaction</li>
+      <li>How much "debate failure" was predictable from solo behaviour</li>
+      <li>A mechanism that passed a pre-registered test</li>
+      <li>Released question generator, code and logs anyone can rerun</li>
+    </ul></div>
+    <div class="card no"><h3>Does NOT count (already known)</h3><ul>
+      <li>"Multi-agent systems fail"</li>
+      <li>"Models make correlated errors"</li>
+      <li>"Diversity improves accuracy"</li>
+      <li>"Debate ≈ voting"</li>
+      <li>Accuracy tables without the null model</li>
+    </ul></div>
+  </div>
+  <p class="ps"><strong>The honest framing, whatever the data show:</strong> we measured how much of the agents' joint error is explained by each agent's own behaviour and how much isn't; here's the split, here's what explains the rest, and here's what didn't.</p>
+</section>
+
+<section id="plan">
+  <span class="eyebrow">10 · Timeline</span>
+  <h2>Six months, each with a pass/fail gate</h2>
+  <p class="muted">Build order inside the MVP: question generator + checkers → model runner with logging → Exp 0 → Layer 0 → null-model code + Exp 1 (must be zero) → sequential protocol + Exp 7 with random-answer control → analysis. Only then add a second model.</p>
+  <div class="months">
+    <div class="month"><div class="m">1<small>Understand</small></div><div><p>Read the core papers, get Qwen3.5-4B running locally, re-derive the toy examples by hand, write a 2-page note.</p><div class="gatebox">Gate: you can explain on a whiteboard why difficulty alone creates "excess" joint error.</div></div></div>
+    <div class="month"><div class="m">2<small>Build</small></div><div><p>Question generator (3 families), checkers + tests vs 150 hand labels, data schema, runner, null-model code tested on fake data with known copying. Exp 0.</p><div class="gatebox">Gate: checker hits 95% / 85%; re-runs are identical; code recovers the known copying rate.</div></div></div>
+    <div class="month"><div class="m">3<small>Baseline</small></div><div><p>Layer 0 on Kaggle, Exp 1, compare naive vs per-question expectation on real data, power analysis, pre-register Exp 7.</p><div class="gatebox">Gate: Exp 1 residual is indistinguishable from zero on every question family.</div></div></div>
+    <div class="month"><div class="m">4<small>Controlled</small></div><div><p>Exp 7 (both orders, steps shown/hidden) + random-answer control; Exp 4 for one model pair; full analysis.</p><div class="gatebox">Gate: hypotheses tested exactly as pre-registered; alternative explanations checked.</div></div></div>
+    <div class="month"><div class="m">5<small>Mechanism</small></div><div><p>Pick the control conditions month 4 points to; try one intervention that should shrink the residual.</p><div class="gatebox">Gate: one pre-registered mechanism prediction that held (and could have failed).</div></div></div>
+    <div class="month"><div class="m">6<small>Write</small></div><div><p>Replicate on a second model family, robustness checks, write the paper, release everything. Workshop first.</p><div class="gatebox">Gate: main result reproduces in direction and rough size.</div></div></div>
+  </div>
+  <p class="muted">If a gate fails, repeat the month. That's the plan working, not failing.</p>
+</section>
+
+<section id="checklist">
+  <span class="eyebrow">11 · Don't fool yourself</span>
+  <h2>Pitfalls to check before believing any result</h2>
+  <ul>
+    <li>Did you compare against per-question expectations, and did Exp 1 give ≈ 0?</li>
+    <li>Are you calling "they think alike" (Q1) "they influence each other" (Q2)?</li>
+    <li>Is any label produced by an AI judge? Not allowed for the main numbers.</li>
+    <li>Could A and B be leaking info through seeds, cache or batching?</li>
+    <li>Are settings (temperature, quantisation, model version) identical across conditions?</li>
+    <li>Did you compare bigger vs smaller models only at matched accuracy?</li>
+    <li>Did you treat each run as independent? The real unit is the question.</li>
+    <li>"Communication fixed errors" — or did B just copy a more accurate A? Check helpful vs harmful flips.</li>
+    <li>Write two alternative explanations before your own interpretation.</li>
+  </ul>
+</section>
+
+<section>
+  <span class="eyebrow">12 · Practical setup</span>
+  <h2>Models, compute, sample size</h2>
+  <div class="analogy">
+    <div class="card"><h3>Models</h3><p>Workhorse: Qwen3.5 (0.8B–27B). Different families later: Gemma 4, Phi-4-mini, Ministral, Llama 3, SmolLM3, OLMo 3, Granite.</p></div>
+    <div class="card"><h3>Compute</h3><p>Develop on the Mac with 20 questions. Real runs on Kaggle 2×T4 with vLLM: ~3–5 hours per big run.</p></div>
+    <div class="card"><h3>How many questions?</h3><p>400 questions × 5 runs catches a 5-point residual 90% of the time. Under 200 questions, ignore residuals below 10 points.</p></div>
+  </div>
+  <p>Settings: temperature 0.7, structured JSON output (<code>steps</code>, <code>final</code>, <code>confidence</code>), every row logged to append-only JSONL with seed, model version and checker version.</p>
+</section>
+
+<p class="foot">Summarised from "Excess Error Correlation in Multi-Agent LLM Systems: a research field guide" (September 2026). The slider demo uses the guide's Example 2/3 setup: A's average error 20%, B's error 1.25× A's on every question.</p>
+</div>
+
+<script>
+(function () {
+  var s = document.getElementById('sd');
+  var OBS = 0.09, MAX = 0.2;
+  function pct(x) { return (x * 100).toFixed(1) + '%'; }
+  function upd() {
+    var sd = parseFloat(s.value);
+    var naive = 0.20 * 0.25;
+    var item = naive + 1.25 * sd * sd;   // E[eA*eB] = ēAēB + Cov, with eB = 1.25 eA
+    document.getElementById('sdv').textContent = sd.toFixed(2);
+    document.getElementById('n1').textContent = pct(naive);
+    document.getElementById('n2').textContent = pct(item);
+    document.getElementById('f1').style.width = (naive / MAX * 100) + '%';
+    document.getElementById('f2').style.width = Math.min(item / MAX * 100, 100) + '%';
+    document.getElementById('f3').style.width = (OBS / MAX * 100) + '%';
+    var v = document.getElementById('verdict');
+    var gap = OBS - item;
+    if (gap > 0.01) {
+      v.style.background = 'var(--badTint)';
+      v.innerHTML = 'Difficulty explains only part of it. <strong>' + pct(gap) + '</strong> left over could be real influence, worth testing.';
+    } else {
+      v.style.background = 'var(--goodTint)';
+      v.innerHTML = 'Difficulty alone explains the whole 9%. <strong>No evidence the agents influence each other.</strong>';
+    }
+  }
+  s.addEventListener('input', upd);
+  upd();
+})();
+</script>
