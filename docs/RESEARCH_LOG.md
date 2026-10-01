@@ -32,7 +32,7 @@ evaluation, and does who-speaks-first matter.
 |---|---|---|
 | 0 | Read guide, plain-language explainer | ✅ 2026-09-30 |
 | 1 | Item set `cep_v1` + programmatic checker + tests | ✅ 2026-10-01 |
-| 2 | Model runner (Mac + Kaggle), Experiment 0 sanity | 🔄 in progress |
+| 2 | Model runner (Mac + Kaggle), Experiment 0 sanity | ✅ 2026-10-01 (one open item: GPU wording drift, see Findings) |
 | 2a | Hand-audit 30 items (`datasets/cep_v1/audit_sample.md`) | ⏳ waiting on Shibaditya |
 | 3 | Layer 0: each agent answers all 300 items × 20 alone (Kaggle) | ⏳ |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
@@ -68,7 +68,7 @@ Item set `cep_v1`: 300 items, 200 with a pre-specified lure, items hash in `data
 |---|---|
 | Python (Mac) | 3.11 in `.venv` (uv) |
 | Mac | Apple M3, 8 GB RAM; mlx-lm 0.32.0, mlx 0.32.3; ~32 tokens/s |
-| Kaggle | 2× Tesla T4 (15 GB each), 30 GPU-h/week; Python 3.12, torch 2.10+cu128; vLLM installed per job |
+| Kaggle | 2× Tesla T4 (15 GB each, compute capability 7.5), 30 GPU-h/week; Python 3.12, torch 2.10+cu128; vLLM 0.30.0 installed per job; `max_num_seqs` 128 |
 | Kaggle access | Kaggle CLI 2.2.4, account `debshibaditya`, jobs pushed by `kaggle/push.py` (clones a pinned git commit) |
 | Grading | `cep/parse.py` → `cep/normalize.py` → `cep/checker.py`; checker version `f7805da13b9b`; no LLM judge |
 | Logs | one JSONL row per answer (`coc/schema.py`, ~50 fields), append-only, resumable |
@@ -77,6 +77,10 @@ Item set `cep_v1`: 300 items, 200 with a pre-specified lure, items hash in `data
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
+| 2026-10-01 | Structured JSON decoding on for all agents (`structured_output: true`) | E0: 100% valid JSON vs 98%, same accuracy; removes a failure mode that could differ across question types | Free decoding + backup reader |
+| 2026-10-01 | Prefix caching off in vLLM | Suspected source of rerun drift; costs little because each prompt is short | Leave on, accept drift |
+| 2026-10-01 | vLLM on T4 runs Qwen3.5 in float16 (T4 has no bfloat16) | Hardware limit; vLLM casts automatically. Mac-vs-Kaggle accuracy in E0 checks it does no harm | Could not use bf16 |
+| 2026-10-01 | Test constrained JSON decoding before adopting it | It removes format failures but may change what the model writes; compare accuracy and lure rates with/without on the same items first | Adopt blindly; change prompt instead |
 | 2026-10-01 | Thinking mode off | 5–10× more tokens otherwise; our JSON format already asks for written steps; matches the guide's ~400-token budget | Thinking on (could study later as its own factor) |
 | 2026-10-01 | Mac = 4-bit dev copy only; all reported numbers from Kaggle fp16 | Guide: never mix quantisations for one agent within an experiment | Running everything on the Mac (too slow: ~5 s per answer) |
 | 2026-10-01 | Mixed item set: datasets where they give answers + lures, generated items where famous versions are memorised | Saves ~⅔ of the building work; keeps uncontaminated trick questions with exact lures | All generated (guide default); all datasets (memorised trick questions, no lures) |
@@ -87,6 +91,30 @@ Item set `cep_v1`: 300 items, 200 with a pre-specified lure, items hash in `data
 
 ## 5. Findings
 
+### 2026-10-01: Experiment 0 on Kaggle (20 items × 3, vLLM 0.30.0, fp16, 1× T4)
+| | Free decoding | Structured JSON decoding |
+|---|---|---|
+| Accuracy | 98% (59/60) | 98% (59/60) |
+| Valid JSON | 98% (1 needed the backup reader) | **100%** |
+| Truncated | 0 | 0 |
+| Output tokens, median / max | 178 / 537 | 159 / 828 |
+| Rerun: identical text | 57/60 | 50/60 |
+| Rerun: identical **final answer** | **60/60** | **60/60** |
+| Errors | 1 lure (overtaking) | 1 invented number on a missing-premise item |
+
+- **Full precision on Kaggle behaves far better than the 4-bit Mac copy:** 98% vs 87% accuracy and
+  98–100% vs 80% valid JSON, no looping. The Mac copy's format problems were mostly a 4-bit artefact.
+  Confirms the rule that Mac numbers are development-only.
+- **Structured decoding** removes format failures entirely without changing accuracy on this slice →
+  adopted for all agents.
+- **Rerun drift:** with identical seeds, 3–10 of 60 explanations diverge partway through (first
+  differing character between 1 and 625) but **no final answer changed**. Classic GPU floating-point
+  non-determinism; most likely amplified by prefix caching (the second run reused the first run's
+  cached prompt computations). Prefix caching is now off; determinism is re-checked at the start of
+  the next Kaggle job. If drift remains, it is equivalent to extra sampling noise *within* one agent and
+  cannot couple two agents, so it does not bias the null model; it only weakens exact reproducibility.
+- Speed: ~1.1 s per answer amortised at batch 60, after ~12 min of vLLM start-up.
+
 ### 2026-10-01: Experiment 0 on the Mac, round 1 (20 items × 3, 4-bit; development only)
 - 87% correct overall; most of this slice is easy for the model.
 - **Format is the main problem:** only 80% of replies were valid JSON. 5 of 60 had no readable
@@ -96,7 +124,9 @@ Item set `cep_v1`: 300 items, 200 with a pre-specified lure, items hash in `data
   made-up number; missing-premise items are the hardest (1 of 3 correct).
 - The model often writes a full prose solution *and then* the JSON, roughly doubling output length.
 - Speed: median 148 output tokens, ~5 s per answer on the Mac.
-- Rerun determinism (round 2) and the Kaggle comparison: pending.
+- **Rerun determinism: 60/60 answers byte-identical** across two runs with the same seeds. Per-trial
+  seeding works on the Mac.
+- Kaggle comparison: first attempt crashed during vLLM start-up (see Problems); rerun pending.
 
 ## 6. Problems hit and fixes
 
@@ -105,7 +135,9 @@ Item set `cep_v1`: 300 items, 200 with a pre-specified lure, items hash in `data
 | 2026-10-01 | A crash mid-write would glue the next row onto a half-written line, losing it | `repair_tail()` trims a torn last line before resuming; covered by a test |
 | 2026-10-01 | Model download stalled at 2.4/3 GB | Restarted; download resumes |
 | 2026-10-01 | `kaggle/push.py` wrongly said the commit wasn't on GitHub | Fixed the check |
-| 2026-10-01 | 20% of replies not valid JSON (see Findings) | 🔄 Planned: force valid JSON with vLLM structured output |
+| 2026-10-01 | 20% of replies not valid JSON (see Findings) | Added optional JSON-schema-constrained decoding (vLLM structured outputs, `structured_output: true` in the agent config); being compared against free decoding in E0 on Kaggle |
+| 2026-10-01 | Kaggle E0 crashed: vLLM 0.30.0 refused to start Qwen3.5 with 256 concurrent sequences (its hybrid attention layers allow only 153 on a 15 GB T4) | `max_num_seqs = 128` in the agent configs |
+| 2026-10-01 | vLLM takes ~12 min to start on a T4 (torch.compile ~40 s, CUDA-graph capture and profiling the rest), billed to GPU quota | Do several runs/agents inside one Kaggle job (`--run-id run1,run2`) |
 
 ## 7. Experiment notebook
 
@@ -118,12 +150,21 @@ Entries follow the guide's template (§15): fields above the line are written **
 - **Pass criteria:** parse rate high and similar across question types; rerun byte-identical; nothing
   truncated systematically
 - --- after ---
-- **Observed:** Mac round 1, see Findings. Rerun and Kaggle: pending.
+- **Observed (Mac):** parse rate 80% JSON / 92% any answer; 5% truncated; rerun 60/60 identical.
+  **Fails** the parse-rate criterion → format fix.
+- **Observed (Kaggle):** see Findings table. Parse 100% with structured decoding; no truncation;
+  final answers 60/60 identical on rerun, text 50–57/60 identical.
+- **Verdict:** pass, except exact text reproducibility; re-checked with prefix caching off.
+- **Alternatives considered:** (1) drift from prefix caching; (2) from GPU kernel non-determinism in
+  Qwen3.5's linear-attention (Triton fallback path on T4). Test (1) next job; (2) would remain.
 - **What changed in my understanding:** output format failures are frequent enough to bias "same
   wrong answer" counts, so they must be fixed before Layer 0.
 
 ## 8. Next steps
-1. Finish E0: Mac rerun determinism; Kaggle speed, parse rate, determinism.
-2. Fix the output format (structured JSON), rerun E0 on Kaggle.
-3. Hand-audit the 30 items.
-4. Layer 0 on Kaggle (300 items × 20 samples).
+1. **Shibaditya:** hand-audit the 30 items in `datasets/cep_v1/audit_sample.md` (items must be final
+   before Layer 0, because changing them later invalidates it).
+2. Layer 0 on Kaggle: agents A and B, 300 items × K = 20 each (12,000 answers), one agent per T4;
+   starts with a 20-item determinism re-check (prefix caching off).
+3. Checker validation: hand-label 150 answers from Layer 0 (target ≥ 95% on right/wrong, ≥ 85% on
+   error class).
+4. Null-model code (`nulls.py`) + Experiment 1.
