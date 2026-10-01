@@ -28,6 +28,7 @@ class Trial(BaseModel):
     backend: str
     framework_version: str
     enable_thinking: bool
+    structured_output: bool = False      # decoding constrained to the answer JSON schema
     role: str = "solver"
     prompt_version: str
     prompt_hash: str

@@ -12,7 +12,7 @@ from pathlib import Path
 from cep import normalize
 from cep.checker import check_raw
 from cep.schema import Item
-from coc.backends import Backend, Request
+from coc.backends import ANSWER_SCHEMA, Backend, Request
 from coc.schema import Trial, stable_seed
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -80,7 +80,8 @@ def run_independent(items: list[Item], agent: dict, backend: Backend, k: int, ou
         chunk = todo[b:b + batch_size]
         batch_id = uuid.uuid4().hex[:10]
         reqs = [Request(system, it.question, seed, agent["temperature"], agent["top_p"],
-                        agent["max_tokens"], agent["enable_thinking"]) for _, it, _, seed in chunk]
+                        agent["max_tokens"], agent["enable_thinking"],
+                        ANSWER_SCHEMA if agent.get("structured_output") else None) for _, it, _, seed in chunk]
         gens = backend.generate(reqs)
         with out_path.open("a") as f:
             for pos, ((tid, it, s, seed), g) in enumerate(zip(chunk, gens)):
@@ -93,6 +94,7 @@ def run_independent(items: list[Item], agent: dict, backend: Backend, k: int, ou
                     agent_id=agent["agent_id"], model=agent["model"], model_revision=agent["revision"],
                     quantization=backend.quantization, dtype=backend.dtype, backend=backend.name,
                     framework_version=backend.framework_version, enable_thinking=agent["enable_thinking"],
+                    structured_output=bool(agent.get("structured_output")) and backend.name != "mlx",
                     prompt_version=agent["prompt"], prompt_hash=prompt_hash, seed=seed,
                     temperature=agent["temperature"], top_p=agent["top_p"], max_tokens=agent["max_tokens"],
                     raw_output=g.text, normalizer_version=normalize.NORMALIZER_VERSION,
@@ -119,20 +121,23 @@ def make_backend(agent: dict, backend: str) -> Backend:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--experiment", required=True)
-    ap.add_argument("--run-id", default="run1", help="a second run-id reruns everything (determinism check)")
+    ap.add_argument("--run-id", default="run1",
+                    help="comma-separated; each run id reruns everything (run1,run2 = determinism check)")
     args = ap.parse_args()
     exp = json.loads((ROOT / args.experiment).read_text())
     items = load_items(ROOT / exp["items"])
     if exp.get("n_items"):
         items = dev_slice(items, exp["n_items"])
-    exp_id = f"{exp['experiment_id']}-{args.run_id}"
     backend = None
-    for agent_file in exp["agents"]:
-        agent = json.loads((ROOT / agent_file).read_text())
-        backend = backend or make_backend(agent, exp["backend"])   # agents sharing weights share a backend
-        out = ROOT / exp["out_dir"] / f"{exp_id}__{agent['agent_id']}.jsonl"
-        print(f"{agent['agent_id']}: {len(items)} items x K={exp['k']} -> {out.relative_to(ROOT)}")
-        run_independent(items, agent, backend, exp["k"], out, exp_id, args.run_id, exp.get("batch_size", 64))
+    for run_id in args.run_id.split(","):
+        exp_id = f"{exp['experiment_id']}-{run_id}"
+        for agent_file in exp["agents"]:
+            agent = json.loads((ROOT / agent_file).read_text())
+            backend = backend or make_backend(agent, exp["backend"])  # agents sharing weights share a backend
+            out = ROOT / exp["out_dir"] / f"{exp_id}__{agent['agent_id']}.jsonl"
+            print(f"{agent['agent_id']}: {len(items)} items x K={exp['k']} -> {out.relative_to(ROOT)}", flush=True)
+            run_independent(items, agent, backend, exp["k"], out, exp_id, run_id, exp.get("batch_size", 64),
+                            log=lambda *a: print(*a, flush=True))
 
 
 if __name__ == "__main__":
