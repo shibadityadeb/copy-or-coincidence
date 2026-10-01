@@ -30,7 +30,7 @@ def main():
     if sh("git", "-C", str(ROOT), "status", "--porcelain", "--", "cep", "coc", "configs", "experiments",
           "prompts", "datasets"):
         raise SystemExit("uncommitted changes in code/configs: commit and push first")
-    if commit not in sh("git", "-C", str(ROOT), "branch", "-r", "--contains", commit):
+    if not sh("git", "-C", str(ROOT), "branch", "-r", "--contains", commit):
         raise SystemExit(f"commit {commit[:8]} is not on GitHub yet: git push first")
 
     exp = json.loads((ROOT / a.experiment).read_text())
