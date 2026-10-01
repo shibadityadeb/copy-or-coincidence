@@ -34,7 +34,7 @@ def main():
         raise SystemExit(f"commit {commit[:8]} is not on GitHub yet: git push first")
 
     exp = json.loads((ROOT / a.experiment).read_text())
-    slug = f"coc-{exp['experiment_id']}-{a.run_id}".replace("_", "-").lower()
+    slug = f"coc-{exp['experiment_id']}-{a.run_id}".replace("_", "-").replace(",", "-").lower()
     job = ROOT / "kaggle" / "jobs" / slug
     job.mkdir(parents=True, exist_ok=True)
     src = (ROOT / "kaggle/layer0/layer0.py").read_text()
