@@ -1,0 +1,13 @@
+{
+  "experiment_id": "exp0_kaggle",
+  "description": "Experiment 0 on Kaggle (vLLM fp16, 1x T4): same 20-item slice, K=3. Checks vLLM runs, parse rate, speed, and rerun determinism before the full Layer 0.",
+  "items": "datasets/cep_v1/items.jsonl",
+  "n_items": 20,
+  "k": 3,
+  "agents": [
+    "configs/agents/qwen35_4b_A.json"
+  ],
+  "backend": "vllm",
+  "batch_size": 256,
+  "out_dir": "outputs/exp0_kaggle"
+}

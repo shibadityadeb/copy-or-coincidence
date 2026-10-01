@@ -1,0 +1,13 @@
+{
+  "experiment_id": "exp0_dev",
+  "description": "Experiment 0 on the Mac: pipeline sanity on a 20-item slice, K=3. Development only; never reported.",
+  "items": "datasets/cep_v1/items.jsonl",
+  "n_items": 20,
+  "k": 3,
+  "agents": [
+    "configs/agents/qwen35_4b_A.json"
+  ],
+  "backend": "mlx",
+  "batch_size": 4,
+  "out_dir": "outputs/exp0_dev"
+}

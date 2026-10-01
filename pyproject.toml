@@ -6,11 +6,11 @@ requires-python = ">=3.11"
 dependencies = ["datasets", "numpy", "pandas", "pydantic>=2", "pytest"]
 
 [tool.pytest.ini_options]
-testpaths = ["cep/tests"]
+testpaths = ["cep/tests", "coc/tests"]
 
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["cep*"]
+include = ["cep*", "coc*"]

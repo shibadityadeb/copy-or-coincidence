@@ -5,3 +5,4 @@ __pycache__/
 kaggle/*/output/
 .DS_Store
 *.egg-info/
+kaggle/jobs/*/output/
