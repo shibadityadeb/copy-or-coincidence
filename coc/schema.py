@@ -43,6 +43,7 @@ class Trial(BaseModel):
     previous_agent_output_available: bool = False
     peer_trial_ids: list[str] = Field(default_factory=list)
     peer_content_shown: Optional[str] = None
+    peer_answer_norm: Optional[str] = None   # canonical form of the answer the receiver was shown
     retrieved_context_id: Optional[str] = None
     # output + grading
     raw_output: str

@@ -1,0 +1,40 @@
+{
+  "experiment_id": "exp7_olmo",
+  "description": "Experiment 7 (pre-registered, prereg/exp7_sequential_exposure.md): receiver answers after seeing a sender's Layer 0 answer. 600 cep_v2 items x R=5 x 4 conditions = 12,000 answers.",
+  "items": "datasets/cep_v2/items.jsonl",
+  "R": 5,
+  "peer_prompt": "peer_v1",
+  "layer0": {
+    "A": "outputs/layer0_olmo/layer0_olmo-run1__olmo3-7b-A.jsonl",
+    "B": "outputs/layer0_olmo/layer0_olmo-run1__olmo3-7b-B.jsonl"
+  },
+  "conditions": [
+    {
+      "name": "seq_steps",
+      "receiver": "configs/agents/olmo3_7b_B.json",
+      "sender": "A",
+      "show": "steps"
+    },
+    {
+      "name": "seq_answer",
+      "receiver": "configs/agents/olmo3_7b_B.json",
+      "sender": "A",
+      "show": "answer"
+    },
+    {
+      "name": "random_answer",
+      "receiver": "configs/agents/olmo3_7b_B.json",
+      "sender": "random",
+      "show": "answer"
+    },
+    {
+      "name": "seq_steps_rev",
+      "receiver": "configs/agents/olmo3_7b_A.json",
+      "sender": "B",
+      "show": "steps"
+    }
+  ],
+  "backend": "vllm",
+  "batch_size": 512,
+  "out_dir": "outputs/exp7_olmo"
+}
