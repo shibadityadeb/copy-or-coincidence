@@ -297,6 +297,7 @@ A's answer with known probability c.
 
 | Date | Problem | Fix |
 |---|---|---|
+| 2026-10-02 | Gemma-4-E4B, third attempt (`attention_backend=FLEX_ATTENTION` as engine argument): FlexAttention starts but raises "FlexAttention does not support kv sharing yet" (Gemma-4 E-series shares KV caches across layers) | **Gemma-4 is not runnable on T4 with vLLM 0.30**: Triton attention exceeds T4 shared memory, FlexAttention lacks KV sharing. A plain-transformers backend would lose per-trial seeds, constrained JSON decoding and batching, so it would not be the same pipeline. Dropped as a family; choose another third family |
 | 2026-10-02 | Gemma retry used the wrong switch: vLLM 0.30 ignores the `VLLM_ATTENTION_BACKEND` env var | Must pass the backend through the engine arguments instead; untested so far |
 | 2026-10-02 | Gemma-4-E4B would not start on T4 (`exp0_gemma` v1): vLLM's Triton attention kernel needs 96 KB of on-chip shared memory for Gemma-4's large attention heads; the T4 has 64 KB. Not a float16 problem | Retrying with vLLM's FlexAttention backend; OLMo-3-7B tested in the same Kaggle job as the fallback. Jobs can now run several experiments, each in its own process |
 | 2026-10-02 | Reasoning Gym math generator: wrong answer keys and unused numbers | Wrote `math_word.py`: 10 templates, every quantity used, exact integer answers; a test perturbs each hidden quantity and checks the answer changes |
