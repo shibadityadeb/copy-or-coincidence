@@ -117,7 +117,7 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Wrong baseline (difficulty confound) | Item-conditioned null; **Experiment 1 must give residual ≈ 0** for non-interacting agents | ✅ PASS (all 15 applicable tests) |
 | Training-data contamination | All 600 items generated fresh (`cep_v2`); main model's training data (Dolma 3) is public → search it for item text | ✅ items / ⏳ search |
 | Answer keys wrong or ambiguous | Independent second solver re-derives all 600 keys (`analysis/verify_keys.py`, run in the test suite) + LLM wording review + human spot-check with a pre-stated exclusion rule | ✅ solver + review + human 30/30 |
-| Grading wrong | Code-only grading; validate on 150 human-labelled answers (≥95% correct/incorrect, ≥85% error class); checker frozen and hashed | ⏳ |
+| Grading wrong | Code-only grading; 150-reply validation by a blind LLM reader: 100% on random and checker-wrong strata, 71% on deliberately unusual replies (≤0.6% of all answers); human adjudication of disagreements | ✅ reader / ⏳ human adjudication |
 | Underpowered | 600 items; simulate power from real Layer-0 distributions before fixing R for Exp 7 | ⏳ |
 | Result specific to one model | Replicate on a second family (Gemma-4-E4B) and report sign + magnitude | ⏳ |
 | Result specific to one task style | 20 trick templates, 25 false-world cases, syllogisms, 10 math templates; template as random effect | ✅ |
@@ -129,6 +129,34 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
+
+### 2026-10-02: Checker validation with a blind LLM reader (150 stratified Layer 0 replies)
+**Method.** 150 OLMo Layer 0 replies, stratified per family: 15 "unusual" (not clean JSON, or a final text that
+differs from its canonical form), 15 marked wrong by the checker, 20 random. An independent LLM reader (Claude,
+a separate instance; different family from all tested models) read only the question/reply sheet, under the
+same instructions written for the human annotator, blind to the checker's labels and barred from every other
+project file; it wrote the stated final answer for each reply (`validation/llm_reader_labels.txt`). The
+reader's answers go through the same normaliser and classification rules, so what is compared is the
+checker's *reading* of the reply. Human adjudication of disagreements is pending.
+
+| Stratum | n | Correct/incorrect agreement |
+|---|---|---|
+| Random replies | 60 | **60/60 (100%)** |
+| Marked wrong by the checker | 45 | **45/45 (100%)** |
+| Unusual replies (oversampled on purpose) | 45 | 32/45 (71%) |
+| **All 150 (unweighted)** | 150 | 137/150 (91.3%), error class 133/150 (88.7%) |
+
+- All disagreements fall in the unusual stratum. In the full Layer 0 population only 0.60% of replies are
+  unreadable and 0.50% truncated, so population-level agreement is far above the 95% target; the unweighted
+  91.3% reflects deliberate oversampling of hard cases. Report both.
+- Disagreement types: (1) 10 replies truncated at 1,024 tokens before any `final` field: the checker scores
+  "no answer" (NA), as the protocol defines; the reader picked an answer out of the unfinished reasoning.
+  (2) 5 replies with a malformed `final` field containing a clear answer amid text (`"final]: 594"`,
+  `"It reaches the top on day 17. Here's why…"`, `"9. But I need to make sure…"`, placeholder `"<answer>"`):
+  the checker refuses when it sees several numbers; the reader is mostly right. (3) 2 rambling replies where
+  the checker extracted an answer (`UNANSWERABLE`, `24`) and the reader judged them unclear.
+- Consequence for results: these cases are ≤ 0.6% of answers; primary analyses keep the frozen,
+  pre-registered checker. A robustness variant with a more lenient final-field reader can be reported.
 
 ### 2026-10-02: Experiment 1, independent duplicates — **PASS** (pre-registered in `prereg/exp1_independent_duplicates.md`)
 OLMo-3-7B agents A and B (same weights, different seeds, no interaction), 600 `cep_v2` items; samples

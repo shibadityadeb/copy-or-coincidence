@@ -1,8 +1,8 @@
 """Agreement between the checker and a human reading of 150 Layer 0 replies.
 
-python analysis/checker_agreement.py validation/checker_label_sheet.md
-Human answers come from the `answer:` lines of the sheet (or from validation/human_labels.txt with lines
-"n: answer"). Each human answer goes through the same normaliser, and its error class is derived with the
+python analysis/checker_agreement.py validation/checker_label_sheet.md [labels.txt]
+Reader answers come from the `answer:` lines of the sheet, or from a labels file with lines "n: answer"
+(e.g. validation/llm_reader_labels.txt from the blind LLM reader). Each human answer goes through the same normaliser, and its error class is derived with the
 same rules, so what is tested is the checker's reading of the reply (parsing + normalisation), not the rules.
 Targets (field guide §3): correct/incorrect >= 0.95, error class >= 0.85.
 """
@@ -17,9 +17,9 @@ from cep.schema import Item
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def human_answers(sheet: Path) -> dict[int, str]:
+def human_answers(sheet: Path, labels_file: str | None = None) -> dict[int, str]:
     out = {}
-    extra = ROOT / "validation/human_labels.txt"
+    extra = Path(labels_file) if labels_file else ROOT / "validation/human_labels.txt"
     if extra.exists():
         for line in extra.read_text().splitlines():
             if m := re.match(r"\s*(\d+)\s*[:.)-]\s*(.+)", line):
@@ -30,11 +30,11 @@ def human_answers(sheet: Path) -> dict[int, str]:
     return out
 
 
-def main(sheet_path: str):
+def main(sheet_path: str, labels_file: str | None = None):
     key = json.loads((ROOT / "validation/checker_label_key.json").read_text())
     items = {i.item_id: i for i in (Item.model_validate_json(l) for l in
                                     (ROOT / "datasets/cep_v2/items.jsonl").read_text().splitlines())}
-    human = human_answers(Path(sheet_path))
+    human = human_answers(Path(sheet_path), labels_file)
     done, agree_c, agree_cls, disagreements = 0, 0, 0, []
     for k in key:
         if k["n"] not in human:
@@ -60,4 +60,5 @@ def main(sheet_path: str):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "validation/checker_label_sheet.md")
+    main(sys.argv[1] if len(sys.argv) > 1 else "validation/checker_label_sheet.md",
+         sys.argv[2] if len(sys.argv) > 2 else None)
