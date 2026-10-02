@@ -40,6 +40,7 @@ evaluation, and does who-speaks-first matter.
 | 5 | Null-model code (`coc/nulls.py`) ✅ validated on simulated data; Experiment 1 on real data ⏳ after Layer 0 | 🔄 |
 | 6 | Experiment 7: A→B, B→A, random-answer control | ⏳ |
 | 7 | Analysis + write-up | ⏳ |
+| 8 | Publish dataset on Hugging Face as `copy-or-coincidence` (CC-BY-4.0, public, canary GUID `92afb6b4-…`) | ⏳ **at the end**, after final tweaks; prepared by `release/make_hf_release.py` |
 
 ## 3. What we are using
 
@@ -86,6 +87,7 @@ candidate model's training cutoff.
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
+| 2026-10-02 | Release `cep_v2` on Hugging Face as `copy-or-coincidence`, CC-BY-4.0, public, with a canary string on every row; **upload deferred to the end of the project** (Shibaditya) | Citable, reproducible; canary lets model trainers exclude it. Deferring lets late tweaks go into the released version | Upload now; gated access; CC-BY-NC |
 | 2026-10-02 | **OLMo-3-7B is the main model; Gemma-4-E4B the second family** (agreed with Shibaditya) | OLMo runs reliably on T4, has public training data (strongest no-contamination evidence), and makes lure errors (9/60 in E0) — shared wrong answers are what we study | Gemma main (blocked on T4 attention kernel); Qwen3.5 (no stated cutoff, 98% accurate → few errors) |
 | 2026-10-02 | **Grow `cep_v2` to 600 items, 20 trick templates** | Guide's power table: 300 items × 5 runs detects a 10-point residual reliably but a 5-point one only ~80%; 400+ items for 90%. More templates guard against "the result is about 10 riddles" and support a template random effect | Keep 300 (underpowered for small effects) |
 | 2026-10-02 | ~~Switch main model to Gemma-4-E4B; OLMo-3-7B as second family~~ (superseded same day) | Both state a training cutoff (Jan 2025 / Dec 2024); OLMo publishes its training data; Qwen3.5 states no cutoff | Keep Qwen3.5; Phi-4-mini (cutoff Jun 2024, weaker) |

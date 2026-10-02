@@ -6,3 +6,4 @@ kaggle/*/output/
 .DS_Store
 *.egg-info/
 kaggle/jobs/*/output/
+release/hf/
