@@ -1,11 +1,13 @@
-"""Layer 0: every agent answers every item K times, alone. Resumable, append-only JSONL.
+"""Runs agents on items and writes one graded JSONL row per answer. Resumable, append-only.
 
-python -m coc.runner --experiment experiments/exp0_dev.json
+Layer 0 (agents alone):           python -m coc.runner --experiment experiments/layer0_olmo.json
+Sequential exposure (Exp 7):      python -m coc.runner --experiment experiments/exp7_olmo.json
 """
 import argparse
 import hashlib
 import json
 import uuid
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -63,49 +65,65 @@ def done_ids(path: Path) -> set[str]:
     return ids
 
 
-def run_independent(items: list[Item], agent: dict, backend: Backend, k: int, out_path: Path,
-                    experiment_id: str, run_id: str, batch_size: int = 64, log=print) -> int:
+@dataclass
+class Spec:
+    """One answer to produce: who answers what, with which seed, and how it relates to a peer."""
+    trial_id: str
+    item: Item
+    sample_index: int
+    seed: int
+    user_text: str
+    trial_fields: dict = field(default_factory=dict)    # protocol, condition, peer_* ... (coc.schema.Trial)
+
+
+def execute(specs: list[Spec], agent: dict, backend: Backend, out_path: Path, experiment_id: str, run_id: str,
+            batch_size: int = 64, log=print) -> int:
+    """Generate, grade and append rows for every spec not already in out_path."""
     system, prompt_hash = load_prompt(agent["prompt"])
     done = done_ids(out_path)
-    todo = []
-    for it in items:
-        for s in range(k):
-            tid = f"{experiment_id}:{agent['agent_id']}:{it.item_id}:independent:{s}"
-            if tid not in done:
-                todo.append((tid, it, s, stable_seed(agent["agent_id"], it.item_id, "independent", str(s))))
+    todo = [s for s in specs if s.trial_id not in done]
     log(f"{len(done)} trials already done, {len(todo)} to run")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     written = 0
     for b in range(0, len(todo), batch_size):
         chunk = todo[b:b + batch_size]
         batch_id = uuid.uuid4().hex[:10]
-        reqs = [Request(system, it.question, seed, agent["temperature"], agent["top_p"],
+        reqs = [Request(system, sp.user_text, sp.seed, agent["temperature"], agent["top_p"],
                         agent["max_tokens"], agent["enable_thinking"],
-                        ANSWER_SCHEMA if agent.get("structured_output") else None) for _, it, _, seed in chunk]
+                        ANSWER_SCHEMA if agent.get("structured_output") else None) for sp in chunk]
         gens = backend.generate(reqs)
         with out_path.open("a") as f:
-            for pos, ((tid, it, s, seed), g) in enumerate(zip(chunk, gens)):
+            for pos, (sp, g) in enumerate(zip(chunk, gens)):
+                it = sp.item
                 graded = check_raw(it, g.text)
                 row = Trial(
-                    trial_id=tid, experiment_id=experiment_id, run_id=run_id, task_id=it.item_id,
-                    sample_index=s, family=it.family, template_id=it.template_id,
+                    trial_id=sp.trial_id, experiment_id=experiment_id, run_id=run_id, task_id=it.item_id,
+                    sample_index=sp.sample_index, family=it.family, template_id=it.template_id,
                     error_cause_by_construction=it.error_cause_by_construction,
                     difficulty_param=it.difficulty_param, item_correct=it.correct, item_lure=it.lure,
                     agent_id=agent["agent_id"], model=agent["model"], model_revision=agent["revision"],
                     quantization=backend.quantization, dtype=backend.dtype, backend=backend.name,
                     framework_version=backend.framework_version, enable_thinking=agent["enable_thinking"],
                     structured_output=bool(agent.get("structured_output")) and backend.name != "mlx",
-                    prompt_version=agent["prompt"], prompt_hash=prompt_hash, seed=seed,
+                    prompt_version=agent["prompt"], prompt_hash=prompt_hash, seed=sp.seed,
                     temperature=agent["temperature"], top_p=agent["top_p"], max_tokens=agent["max_tokens"],
                     raw_output=g.text, normalizer_version=normalize.NORMALIZER_VERSION,
                     prompt_tokens=g.prompt_tokens, output_tokens=g.output_tokens, truncated=g.truncated,
                     latency_ms=round(g.latency_ms, 1), batch_id=batch_id, batch_position=pos,
                     timestamp=datetime.now(timezone.utc).isoformat(timespec="seconds"),
-                    final=graded.pop("final"), **graded)
+                    final=graded.pop("final"), **sp.trial_fields, **graded)
                 f.write(row.model_dump_json() + "\n")
         written += len(chunk)
         log(f"  {len(done) + written}/{len(done) + len(todo)} trials")
     return written
+
+
+def run_independent(items: list[Item], agent: dict, backend: Backend, k: int, out_path: Path,
+                    experiment_id: str, run_id: str, batch_size: int = 64, log=print) -> int:
+    specs = [Spec(f"{experiment_id}:{agent['agent_id']}:{it.item_id}:independent:{s}", it, s,
+                  stable_seed(agent["agent_id"], it.item_id, "independent", str(s)), it.question)
+             for it in items for s in range(k)]
+    return execute(specs, agent, backend, out_path, experiment_id, run_id, batch_size, log)
 
 
 def make_backend(agent: dict, backend: str) -> Backend:
@@ -130,6 +148,11 @@ def main():
     items = load_items(ROOT / exp["items"])
     if exp.get("n_items"):
         items = dev_slice(items, exp["n_items"])
+    if "conditions" in exp:
+        from coc.sequential import run_conditions
+        for run_id in args.run_id.split(","):
+            run_conditions(exp, items, run_id, make_backend, log=lambda *a: print(*a, flush=True))
+        return
     backend = None
     for run_id in args.run_id.split(","):
         exp_id = f"{exp['experiment_id']}-{run_id}"
