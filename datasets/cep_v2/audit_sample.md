@@ -3,228 +3,237 @@
 For each item tick: answer key correct? lure sensible? question unambiguous? Note any problem under the item.
 
 
-## cep_v2-lure-018  ·  widgets  ·  crt_gen:widgets:8
+## cep_v2-lure-035  ·  overtaking  ·  crt_gen:overtaking:5
 
 ```text
-If 11 looms take 11 minutes to make 11 rugs, how many minutes would it take 227 looms to make 227 rugs?
+In a running race, you overtake the person in 7th place. What place are you in now? Answer with the place as a number.
 ```
-- correct: **11**  ·  lure: **227**  ·  cause: intuitive_lure
+- correct: **7**  ·  lure: **6**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-073  ·  fence_posts  ·  crt_gen:fence_posts:3
+## cep_v2-lure-146  ·  inclusive_days  ·  crt_gen:inclusive_days:6
 
 ```text
-A straight street is 36 meters long, with lamp posts placed every 2 meters, including one at each end. How many lamp posts are there?
+A conference runs from July 4 to July 15, including both of those days. On how many days is it held?
 ```
-- correct: **19**  ·  lure: **18**  ·  cause: intuitive_lure
+- correct: **12**  ·  lure: **11**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-098  ·  clock_strikes  ·  crt_gen:clock_strikes:8
+## cep_v2-lure-196  ·  all_but  ·  crt_gen:all_but:6
 
 ```text
-A clock strikes once for each hour, with equal pauses between strikes. It takes 20 seconds to strike 6 o'clock (from the first strike to the last). How many seconds does it take to strike 12 o'clock?
+A farmer has 15 ducks. All but 8 of them fly away. How many ducks does the farmer have left?
 ```
-- correct: **44**  ·  lure: **40**  ·  cause: intuitive_lure
+- correct: **8**  ·  lure: **7**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-009  ·  bat_ball  ·  crt_gen:bat_ball:9
+## cep_v2-lure-017  ·  widgets  ·  crt_gen:widgets:7
 
 ```text
-A laptop and a laptop case cost $1070 in total. The laptop costs $1000 more than the laptop case. How much does the laptop case cost, in dollars?
+If 12 printers take 12 minutes to make 12 posters, how many minutes would it take 228 printers to make 228 posters?
 ```
-- correct: **35**  ·  lure: **70**  ·  cause: intuitive_lure
+- correct: **12**  ·  lure: **228**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-033  ·  overtaking  ·  crt_gen:overtaking:3
+## cep_v2-lure-066  ·  average_speed  ·  crt_gen:average_speed:6
 
 ```text
-In a marathon, you overtake the person in 9th place. What place are you in now? Answer with the place as a number.
+A bus travels from town A to town B at 40 km/h and returns along the same road at 120 km/h. What is the average speed for the whole round trip, in km/h?
+```
+- correct: **60**  ·  lure: **80**  ·  cause: intuitive_lure
+- [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
+- notes: 
+
+## cep_v2-lure-031  ·  overtaking  ·  crt_gen:overtaking:1
+
+```text
+In a cycling race, you overtake the person in 9th place. What place are you in now? Answer with the place as a number.
 ```
 - correct: **9**  ·  lure: **8**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-016  ·  widgets  ·  crt_gen:widgets:6
+## cep_v2-lure-127  ·  cut_log  ·  crt_gen:cut_log:7
 
 ```text
-If 3 robots take 3 minutes to make 3 boxes, how many minutes would it take 47 robots to make 47 boxes?
+It takes 5 minutes to make one cut through a rope. How many minutes does it take to cut it into 11 pieces?
 ```
-- correct: **3**  ·  lure: **47**  ·  cause: intuitive_lure
+- correct: **50**  ·  lure: **55**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-064  ·  average_speed  ·  crt_gen:average_speed:4
+## cep_v2-lure-195  ·  all_but  ·  crt_gen:all_but:5
 
 ```text
-A bus travels from town A to town B at 60 km/h and returns along the same road at 120 km/h. What is the average speed for the whole round trip, in km/h?
+A farmer has 20 goats. All but 6 of them wander off. How many goats does the farmer have left?
 ```
-- correct: **80**  ·  lure: **90**  ·  cause: intuitive_lure
+- correct: **6**  ·  lure: **14**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-058  ·  percent_round_trip  ·  crt_gen:percent_round_trip:8
+## cep_v2-lure-116  ·  reverse_percent  ·  crt_gen:reverse_percent:6
 
 ```text
-A chair costs $500. Its price is increased by 10%, and then the new price is decreased by 10%. What is the final price, in dollars?
+A town's population went up by 50% and is now 1500. What was it before the increase?
 ```
-- correct: **495**  ·  lure: **500**  ·  cause: intuitive_lure
+- correct: **1000**  ·  lure: **750**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-061  ·  average_speed  ·  crt_gen:average_speed:1
+## cep_v2-lure-121  ·  cut_log  ·  crt_gen:cut_log:1
 
 ```text
-A delivery van travels from town A to town B at 90 km/h and returns along the same road at 45 km/h. What is the average speed for the whole round trip, in km/h?
+It takes 4 minutes to make one cut through a metal pipe. How many minutes does it take to cut it into 9 pieces?
 ```
-- correct: **60**  ·  lure: **67.5**  ·  cause: intuitive_lure
+- correct: **32**  ·  lure: **36**  ·  cause: intuitive_lure
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-lure-084  ·  stairs  ·  crt_gen:stairs:4
+## cep_v2-logic-167  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:145
 
 ```text
-It takes 54 seconds to walk up the stairs from the 1st floor to the 4th floor. At the same pace, how many seconds does it take to walk from the 1st floor to the 8th floor?
+Consider these statements:
+1. Some teachers are cats
+2. All cats are parents
+
+Does it logically follow that:
+No cats are teachers?
+(Answer Yes or No)
 ```
-- correct: **126**  ·  lure: **108**  ·  cause: intuitive_lure
+- correct: **FALSE**  ·  lure: **None**  ·  cause: deduction_slip
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-049  ·  false_ontology  ·  false_ontology_gen:lemon:2:1
+## cep_v2-logic-098  ·  false_ontology  ·  false_ontology_gen:salmon:2:1
 
 ```text
-Every lemon is a candy. Every penguin is feathered. Every candy is a food. Every food is not sour. Max is a lemon.
+Every salmon is a bird. Every bat is furry. Every bird is an animal. Every animal is not finned. Stella is a salmon.
 
 Assume every statement above is true, even if it seems false in the real world.
-Is the following statement true or false? Max is sour.
+Is the following statement true or false? Stella is finned.
 ```
 - correct: **FALSE**  ·  lure: **TRUE**  ·  cause: prior_override
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-027  ·  false_ontology  ·  false_ontology_gen:whale:2:0
+## cep_v2-logic-054  ·  false_ontology  ·  false_ontology_gen:spider:2:0
 
 ```text
-Every whale is a fish. Every shark is cold-blooded. Every fish is an animal. Every animal is cold-blooded. Sam is a whale.
+Every spider is an insect. Every cow is plant-eating. Every insect is a creature. Every creature is six-legged. Polly is a spider.
 
 Assume every statement above is true, even if it seems false in the real world.
-Is the following statement true or false? Sam is cold-blooded.
+Is the following statement true or false? Polly is six-legged.
 ```
 - correct: **TRUE**  ·  lure: **FALSE**  ·  cause: prior_override
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-013  ·  false_ontology  ·  false_ontology_gen:crocodile:1:0
+## cep_v2-logic-025  ·  false_ontology  ·  false_ontology_gen:camel:1:0
 
 ```text
-Every crocodile is a bird. Every dolphin is air-breathing. Every bird is feathered. Wren is a crocodile.
+Every camel is a fish. Every dolphin is air-breathing. Every fish is gilled. Max is a camel.
 
 Assume every statement above is true, even if it seems false in the real world.
-Is the following statement true or false? Wren is feathered.
+Is the following statement true or false? Max is gilled.
 ```
 - correct: **TRUE**  ·  lure: **FALSE**  ·  cause: prior_override
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-063  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:23
+## cep_v2-logic-125  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:67
 
 ```text
 Consider these statements:
-1. All reptiles are artists
-2. No artists are writers
+1. Some spiders are not lions
+2. Some lions are students
 
 Does it logically follow that:
-Some reptiles are writers?
+Some spiders are students?
 (Answer Yes or No)
 ```
 - correct: **FALSE**  ·  lure: **None**  ·  cause: deduction_slip
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-004  ·  false_ontology  ·  false_ontology_gen:spider:1:0
+## cep_v2-logic-008  ·  false_ontology  ·  false_ontology_gen:eagle:1:0
 
 ```text
-Every spider is an insect. Every cow is plant-eating. Every insect is six-legged. Rex is a spider.
+Every eagle is a reptile. Every crocodile is scaly. Every reptile is cold-blooded. Sally is an eagle.
 
 Assume every statement above is true, even if it seems false in the real world.
-Is the following statement true or false? Rex is six-legged.
+Is the following statement true or false? Sally is cold-blooded.
 ```
 - correct: **TRUE**  ·  lure: **FALSE**  ·  cause: prior_override
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-050  ·  false_ontology  ·  false_ontology_gen:copper wire:2:1
+## cep_v2-logic-100  ·  false_ontology  ·  false_ontology_gen:camel:2:1
 
 ```text
-Every copper wire is an insulator. Every bat is furry. Every insulator is a material. Every material is not conductive. Stella is a copper wire.
+Every camel is a fish. Every dolphin is air-breathing. Every fish is an animal. Every animal is not air-breathing. Rex is a camel.
 
 Assume every statement above is true, even if it seems false in the real world.
-Is the following statement true or false? Stella is conductive.
+Is the following statement true or false? Rex is air-breathing.
 ```
 - correct: **FALSE**  ·  lure: **TRUE**  ·  cause: prior_override
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-056  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:9
+## cep_v2-logic-111  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:20
 
 ```text
 Consider these statements:
-1. Some children are not bees
-2. Some bees are horses
+1. Some scientists are not butterflies
+2. No butterflies are animals
 
 Does it logically follow that:
-No children are horses?
+No scientists are animals?
 (Answer Yes or No)
 ```
 - correct: **FALSE**  ·  lure: **None**  ·  cause: deduction_slip
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-078  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:72
+## cep_v2-logic-156  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:121
 
 ```text
 Consider these statements:
-1. Some chefs are students
-2. All students are lions
+1. No lions are writers
+2. All writers are mammals
 
 Does it logically follow that:
-Some chefs are not lions?
+Some lions are mammals?
 (Answer Yes or No)
 ```
 - correct: **FALSE**  ·  lure: **None**  ·  cause: deduction_slip
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-098  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:135
+## cep_v2-logic-196  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:241
 
 ```text
 Consider these statements:
-1. All bees are tigers
-2. No tigers are adults
+1. All cats are humans
+2. No humans are elephants
 
 Does it logically follow that:
-No bees are adults?
+No cats are elephants?
 (Answer Yes or No)
 ```
 - correct: **TRUE**  ·  lure: **None**  ·  cause: deduction_slip
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-logic-099  ·  rg_syllogism  ·  reasoning_gym:syllogism:1:143
+## cep_v2-math-197  ·  math_weekly_pay  ·  math_gen:weekly_pay:m7
 
 ```text
-Consider these statements:
-1. No ants are children
-2. Some children are not spiders
-
-Does it logically follow that:
-No children are ants?
-(Answer Yes or No)
+Ana works 20 regular hours a week at $26 per hour. She also works some hours of overtime, paid at twice her normal rate. How many dollars does she earn in the week?
 ```
-- correct: **TRUE**  ·  lure: **None**  ·  cause: deduction_slip
+- correct: **UNANSWERABLE**  ·  lure: **None**  ·  cause: missing_premise
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
@@ -237,83 +246,74 @@ A shop has 10 boxes of pens with 12 pens in each box. It sells 36 pens on Monday
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-math-090  ·  math_tank_fill  ·  math_gen:tank_fill:m5
+## cep_v2-math-179  ·  math_tank_fill  ·  math_gen:tank_fill:m9
 
 ```text
-An empty tank holds 240 liters. Water flows in at 15 liters per minute while a crack leaks a little water every minute. How many minutes does it take to fill the tank?
+An empty tank holds 351 liters. Water flows in at a steady rate while a crack leaks 3 liters per minute. How many minutes does it take to fill the tank?
 ```
 - correct: **UNANSWERABLE**  ·  lure: **None**  ·  cause: missing_premise
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-math-058  ·  math_garden_fence  ·  math_gen:garden_fence:m3
+## cep_v2-math-115  ·  math_garden_fence  ·  math_gen:garden_fence:m5
 
 ```text
-A rectangular garden is 32 meters long and 18 meters wide. Fencing costs a fixed price per meter. How much does it cost, in dollars, to fence the whole garden?
+A rectangular garden is some meters long and 17 meters wide. Fencing costs $7 per meter. How much does it cost, in dollars, to fence the whole garden?
 ```
 - correct: **UNANSWERABLE**  ·  lure: **None**  ·  cause: missing_premise
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-math-035  ·  math_school_buses  ·  math_gen:school_buses:c5
+## cep_v2-math-069  ·  math_school_buses  ·  math_gen:school_buses:c9
 
 ```text
-A school has 6 classes with 32 students each. 50% of all the students go on a trip. Each bus holds 40 students. How many buses are needed?
+A school has 7 classes with 20 students each. 25% of all the students go on a trip. Each bus holds 20 students. How many buses are needed?
 ```
-- correct: **3**  ·  lure: **None**  ·  cause: multi_step
+- correct: **2**  ·  lure: **None**  ·  cause: multi_step
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-math-093  ·  math_weekly_pay  ·  math_gen:weekly_pay:c3
+## cep_v2-math-185  ·  math_weekly_pay  ·  math_gen:weekly_pay:c5
 
 ```text
-Ana works 29 regular hours a week at $27 per hour. She also works 2 hours of overtime, paid at twice her normal rate. How many dollars does she earn in the week?
+Ana works 31 regular hours a week at $19 per hour. She also works 2 hours of overtime, paid at twice her normal rate. How many dollars does she earn in the week?
 ```
-- correct: **891**  ·  lure: **None**  ·  cause: multi_step
+- correct: **665**  ·  lure: **None**  ·  cause: multi_step
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-math-030  ·  math_savings  ·  math_gen:savings:m5
+## cep_v2-math-059  ·  math_savings  ·  math_gen:savings:m9
 
 ```text
-Maya earns $300 per week and saves part of it. After 6 weeks she spends $150 of her savings on a bike. How many dollars of savings does she have left?
+Maya earns $300 per week and saves 25% of it. After 12 weeks she spends some of her savings on a bike. How many dollars of savings does she have left?
 ```
 - correct: **UNANSWERABLE**  ·  lure: **None**  ·  cause: missing_premise
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-math-076  ·  math_ticket_change  ·  math_gen:ticket_change:m1
+## cep_v2-math-152  ·  math_ticket_change  ·  math_gen:ticket_change:m2
 
 ```text
-Adult tickets cost a set price and child tickets cost $7. A family buys 2 adult tickets and 3 child tickets, and pays with $150. How much change do they get, in dollars?
+Adult tickets cost $29 and child tickets cost less. A family buys 3 adult tickets and 3 child tickets, and pays with $200. How much change do they get, in dollars?
 ```
 - correct: **UNANSWERABLE**  ·  lure: **None**  ·  cause: missing_premise
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-math-014  ·  math_fuel_cost  ·  math_gen:fuel_cost:c4
+## cep_v2-math-027  ·  math_fuel_cost  ·  math_gen:fuel_cost:c7
 
 ```text
-A car uses 6 liters of fuel for every 100 km. It drives 100 km on Saturday and 400 km on Sunday. Fuel costs $4 per liter. How much does the fuel for the weekend cost, in dollars?
+A car uses 7 liters of fuel for every 100 km. It drives 300 km on Saturday and 300 km on Sunday. Fuel costs $3 per liter. How much does the fuel for the weekend cost, in dollars?
 ```
-- correct: **120**  ·  lure: **None**  ·  cause: multi_step
+- correct: **126**  ·  lure: **None**  ·  cause: multi_step
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 
 
-## cep_v2-math-041  ·  math_bakery_boxes  ·  math_gen:bakery_boxes:c1
+## cep_v2-math-082  ·  math_bakery_boxes  ·  math_gen:bakery_boxes:c2
 
 ```text
-A baker bakes 6 trays of 24 muffins. She keeps 12 muffins for the shop window and packs the rest into boxes of 4. How many boxes does she fill?
+A baker bakes 7 trays of 24 muffins. She keeps 18 muffins for the shop window and packs the rest into boxes of 6. How many boxes does she fill?
 ```
-- correct: **33**  ·  lure: **None**  ·  cause: multi_step
-- [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
-- notes: 
-
-## cep_v2-math-004  ·  math_shop_restock  ·  math_gen:shop_restock:c4
-
-```text
-A shop has 18 boxes of pens with 24 pens in each box. It sells 58 pens on Monday and twice as many on Tuesday. How many pens are left?
-```
-- correct: **258**  ·  lure: **None**  ·  cause: multi_step
+- correct: **25**  ·  lure: **None**  ·  cause: multi_step
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous
 - notes: 

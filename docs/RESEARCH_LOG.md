@@ -33,9 +33,9 @@ evaluation, and does who-speaks-first matter.
 | 0 | Read guide, plain-language explainer | ✅ 2026-09-30 |
 | 1 | Item set `cep_v1` + programmatic checker + tests | ✅ 2026-10-01 |
 | 2 | Model runner (Mac + Kaggle), Experiment 0 sanity | ✅ 2026-10-01 (one open item: GPU wording drift, see Findings) |
-| 2b | Switch to contamination-proof setup: Gemma-4-E4B + generated-only item set `cep_v2` | 🔄 items built ✅; Gemma failed on T4 (shared memory), retry + OLMo fallback running |
+| 2b | Contamination-proof setup: OLMo-3-7B main model + generated-only `cep_v2` (600 items) | ✅ 2026-10-02 |
 | 2a | Hand-audit 30 items (`datasets/cep_v2/audit_sample.md`) | ⏳ waiting on Shibaditya |
-| 3 | Layer 0: each agent answers all 300 items × 20 alone (Kaggle) | ⏳ |
+| 3 | Layer 0: each agent answers all 600 items × 20 alone (Kaggle) | ⏳ after audit |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
 | 5 | Null-model code + Experiment 1 (independent agents must give residual ≈ 0) | ⏳ |
 | 6 | Experiment 7: A→B, B→A, random-answer control | ⏳ |
@@ -46,8 +46,8 @@ evaluation, and does who-speaks-first matter.
 ### Models
 | Role | Model | Exact version | Where | Notes |
 |---|---|---|---|---|
-| **Agents A and B (MVP)** | `google/gemma-4-E4B-it` (8B total, ~4B effective) | rev `ee0ef602`; **training cutoff Jan 2025** (model card) | Kaggle, vLLM, fp16, both T4s (tensor parallel 2) | Pending float16 feasibility test |
-| **Second family (later)** | `allenai/Olmo-3-7B-Instruct` | **training cutoff Dec 2024**; training data public (Dolma 3) | Kaggle, both T4s | Lets us *prove* items were not in training data |
+| **Agents A and B (main)** | `allenai/Olmo-3-7B-Instruct` | rev `6e5971d9`; **training cutoff Dec 2024**; training data public (Dolma 3) | Kaggle, vLLM 0.30, fp16, both T4s (tensor parallel 2) | E0: 82% accuracy, 9/60 lure hits, 100% JSON, stable answers |
+| **Second family (replication)** | `google/gemma-4-E4B-it` (8B total, ~4B effective) | rev `ee0ef602`; **training cutoff Jan 2025** | Kaggle, both T4s | Does not start under vLLM's default attention on T4; FlexAttention via engine args still to test |
 | Superseded | `Qwen/Qwen3.5-4B` | rev `851bf6e8`; training cutoff **not stated** | Kaggle | Used for Exp 0 only; dropped because its training data can't be dated |
 | Mac development copy | `mlx-community/Qwen3.5-4B-4bit` | rev `0e7ffd5c` | Mac, mlx-lm, 4-bit | Dev only, never reported |
 
@@ -58,13 +58,13 @@ tokens, thinking mode **off**, prompt `prompts/solver_v1.txt`, one fixed seed pe
 ### Item set `cep_v2` (current): every item generated fresh, seed 1
 | Group | Generator | n | Lure | Error cause |
 |---|---|---|---|---|
-| Trick questions | `cep/generators/crt.py` (10 templates) | 100 | intuitive answer | `intuitive_lure` |
-| False-world logic | `cep/generators/false_ontology.py` | 50 | common-sense answer | `prior_override` |
-| Syllogisms (Yes/No), 25 valid + 25 invalid | Reasoning Gym 0.1.25 `syllogism` (Apache-2.0, first released Feb 2025), filtered | 50 | none | `deduction_slip` |
-| Math, complete | `cep/generators/math_word.py` (10 templates) | 50 | none | `multi_step` |
-| Math, one quantity made vague | same | 50 | none | `missing_premise` |
+| Trick questions | `cep/generators/crt.py` (20 templates × 10) | 200 | intuitive answer | `intuitive_lure` |
+| False-world logic | `cep/generators/false_ontology.py` (25 cases × 2 polarities × 2 depths) | 100 | common-sense answer | `prior_override` |
+| Syllogisms (Yes/No), 50 valid + 50 invalid | Reasoning Gym 0.1.25 `syllogism` (Apache-2.0, first released Feb 2025), filtered | 100 | none | `deduction_slip` |
+| Math, complete | `cep/generators/math_word.py` (10 templates × 10) | 100 | none | `multi_step` |
+| Math, one quantity made vague | same | 100 | none | `missing_premise` |
 
-300 items, 150 with a lure; hash in `datasets/cep_v2/manifest.json`. No item exists in any public dataset,
+600 items, 300 with a lure; hash in `datasets/cep_v2/manifest.json`. No item exists in any public dataset,
 so no model's training data can contain it, whatever its cutoff.
 
 ### Superseded item set `cep_v1` (kept frozen, used only for Exp 0)
@@ -86,7 +86,9 @@ candidate model's training cutoff.
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
-| 2026-10-02 | **Switch main model to Gemma-4-E4B; OLMo-3-7B as second family** | Both state a training cutoff (Jan 2025 / Dec 2024); OLMo publishes its training data; Qwen3.5 states no cutoff | Keep Qwen3.5; Phi-4-mini (cutoff Jun 2024, weaker) |
+| 2026-10-02 | **OLMo-3-7B is the main model; Gemma-4-E4B the second family** (agreed with Shibaditya) | OLMo runs reliably on T4, has public training data (strongest no-contamination evidence), and makes lure errors (9/60 in E0) — shared wrong answers are what we study | Gemma main (blocked on T4 attention kernel); Qwen3.5 (no stated cutoff, 98% accurate → few errors) |
+| 2026-10-02 | **Grow `cep_v2` to 600 items, 20 trick templates** | Guide's power table: 300 items × 5 runs detects a 10-point residual reliably but a 5-point one only ~80%; 400+ items for 90%. More templates guard against "the result is about 10 riddles" and support a template random effect | Keep 300 (underpowered for small effects) |
+| 2026-10-02 | ~~Switch main model to Gemma-4-E4B; OLMo-3-7B as second family~~ (superseded same day) | Both state a training cutoff (Jan 2025 / Dec 2024); OLMo publishes its training data; Qwen3.5 states no cutoff | Keep Qwen3.5; Phi-4-mini (cutoff Jun 2024, weaker) |
 | 2026-10-02 | **Generated-only item set `cep_v2`** | A freshly generated item cannot be in any training set, for any model, past or future; stronger than "dataset newer than cutoff" | Datasets released after the cutoff (LiveBench stopped updating Apr 2025; MathArena AIME/HMMT 2026: 30 items, too hard, non-commercial) |
 | 2026-10-02 | Own math generator instead of Reasoning Gym `gsm_symbolic` | In 4 sampled RG items: 1 had a wrong answer key (mixed €/cents, 574 pretzels), 1 contained an unused number; a missing-premise transform on such items could leave them answerable | Use RG math and audit by hand |
 | 2026-10-02 | Missing-premise math items have **no lure** | The hidden number is random, so no single wrong answer tempts; the error that matters is answering at all (`unanswerable_answered`) | Lure = answer with the hidden number (meaningless here) |
@@ -102,6 +104,26 @@ candidate model's training cutoff.
 | 2026-10-01 | Stairs/clock items only with whole-number lures | A lure like 60.75 is almost never produced exactly, so it would under-count lure hits | Keep fractional lures |
 | 2026-10-01 | Several different numbers in an answer → unreadable, not "pick the last one" | A guessed merge could manufacture "same answer" agreement | Take the last number |
 | 2026-10-01 | GitHub repo public | Chosen by Shibaditya; secret scan before every push | Private until paper |
+
+## 4b. Publication validity plan
+
+What a conference reviewer will test, and how this project answers it. Each row must be ✅ before writing.
+
+| Threat / reviewer question | Our answer | Status |
+|---|---|---|
+| Wrong baseline (difficulty confound) | Item-conditioned null; **Experiment 1 must give residual ≈ 0** for non-interacting agents | ⏳ |
+| Training-data contamination | All 600 items generated fresh (`cep_v2`); main model's training data (Dolma 3) is public → search it for item text | ✅ items / ⏳ search |
+| Answer keys wrong or ambiguous | Generator tests (independent recomputation, necessity test for missing premises, existential-import filter) + 30-item human audit | ✅ tests / ⏳ audit |
+| Grading wrong | Code-only grading; validate on 150 human-labelled answers (≥95% correct/incorrect, ≥85% error class); checker frozen and hashed | ⏳ |
+| Underpowered | 600 items; simulate power from real Layer-0 distributions before fixing R for Exp 7 | ⏳ |
+| Result specific to one model | Replicate on a second family (Gemma-4-E4B) and report sign + magnitude | ⏳ |
+| Result specific to one task style | 20 trick templates, 25 false-world cases, syllogisms, 10 math templates; template as random effect | ✅ |
+| Analysis chosen after seeing data | Pre-register ≤ 5 primary hypotheses per experiment as a git-timestamped file before running it; Holm correction; everything else labelled exploratory | ⏳ |
+| Statistics overstate precision | Item is the unit: item-bootstrap CIs, within-item permutation tests, mixed models with item + template random effects | ⏳ |
+| Interaction effect is just a longer prompt / formatting copy | Random-answer control (Condition C), redacted control (E) | ⏳ |
+| Reproducibility | Public repo, pinned model/dataset/package versions, byte-identical item rebuilds, append-only logs with seeds, released raw outputs | ✅ |
+| Non-determinism | Final answers identical on rerun (E0); residual text drift documented; prefix caching off | ✅ |
+| Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
 
@@ -188,11 +210,10 @@ Entries follow the guide's template (§15): fields above the line are written **
   wrong answer" counts, so they must be fixed before Layer 0.
 
 ## 8. Next steps
-1. Gemma-4-E4B float16 feasibility (`exp0_gemma`, running). If it fails → OLMo-3-7B as the main model.
-2. **Shibaditya:** hand-audit the 30 items in `datasets/cep_v2/audit_sample.md` (items must be final
+1. **Shibaditya:** hand-audit the 30 items in `datasets/cep_v2/audit_sample.md` (items must be final
    before Layer 0, because changing them later invalidates it).
-3. Layer 0 on Kaggle: agents A and B, 300 `cep_v2` items × K = 20 each (12,000 answers); starts with a
-   20-item determinism re-check (prefix caching off).
+2. Layer 0 on Kaggle with OLMo-3-7B: agents A and B, 600 `cep_v2` items × K = 20 each (24,000 answers,
+   ~4–5 GPU hours).
 3. Checker validation: hand-label 150 answers from Layer 0 (target ≥ 95% on right/wrong, ≥ 85% on
    error class).
 4. Null-model code (`nulls.py`) + Experiment 1.

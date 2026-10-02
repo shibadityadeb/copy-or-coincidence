@@ -21,10 +21,10 @@ def make_items(version: str, seed: int) -> list:
                 *false_ontology.generate(n=50), *gsm_plus.load(n_missing=50, n_distractor=50, seed=seed)]
     from cep.sources import rg_syllogism
     return [
-        *crt.generate(per_template=10, seed=seed),                                       # 100 trick questions
-        *false_ontology.generate(n=50),                                                  # 50 false-world logic
-        *rg_syllogism.generate(n_valid=25, n_invalid=25, seed=seed),                     # 50 syllogisms
-        *math_word.generate(per_template_complete=5, per_template_missing=5, seed=seed), # 100 math
+        *crt.generate(per_template=10, seed=seed, extra=True),                            # 200 trick (20 templates)
+        *false_ontology.generate(n=100, extra=True),                                      # 100 false-world logic
+        *rg_syllogism.generate(n_valid=50, n_invalid=50, seed=seed),                      # 100 syllogisms
+        *math_word.generate(per_template_complete=10, per_template_missing=10, seed=seed), # 200 math
     ]
 
 

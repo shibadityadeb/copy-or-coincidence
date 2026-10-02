@@ -1,6 +1,6 @@
 # copy-or-coincidence
 
-**Excess error correlation in multi-agent LLMs.** When two agents give the same wrong answer, did one copy the other, or would it have happened anyway?
+**Excess error correlation in multi-agent LLMs.** Main model: OLMo-3-7B-Instruct (open training data). When two agents give the same wrong answer, did one copy the other, or would it have happened anyway?
 
 
 Measures how much of two agents' shared wrong answers is predictable from each agent's own
@@ -15,15 +15,15 @@ uv venv --python 3.11 .venv && uv pip install --python .venv/bin/python -e .
 .venv/bin/python -m cep.build       # rebuilds datasets/cep_v1 (byte-identical for seed 0)
 ```
 
-## Item set: `datasets/cep_v2` (300 items, every one generated fresh)
+## Item set: `datasets/cep_v2` (600 items, every one generated fresh)
 
 | Family | Generator | n | Lure | Error cause |
 |---|---|---|---|---|
-| lure | 10 trick-question templates (`cep/generators/crt.py`) | 100 | intuitive answer | `intuitive_lure` |
-| logic | false-world rules (`cep/generators/false_ontology.py`) | 50 | common-sense answer | `prior_override` |
-| logic | syllogisms, Reasoning Gym 0.1.25, filtered + balanced (`cep/sources/rg_syllogism.py`) | 50 | none | `deduction_slip` |
-| math | 10 multi-step word-problem templates (`cep/generators/math_word.py`) | 50 | none | `multi_step` |
-| math | same, one quantity made vague | 50 | none | `missing_premise` |
+| lure | 20 trick-question templates (`cep/generators/crt.py`) | 200 | intuitive answer | `intuitive_lure` |
+| logic | false-world rules, 25 cases (`cep/generators/false_ontology.py`) | 100 | common-sense answer | `prior_override` |
+| logic | syllogisms, Reasoning Gym 0.1.25, filtered + balanced (`cep/sources/rg_syllogism.py`) | 100 | none | `deduction_slip` |
+| math | 10 multi-step word-problem templates (`cep/generators/math_word.py`) | 100 | none | `multi_step` |
+| math | same, one quantity made vague | 100 | none | `missing_premise` |
 
 `python -m cep.build --version cep_v2` rebuilds it byte-identically. `cep_v1` (which drew on GSM-Plus and
 ProntoQA) is kept frozen for Experiment 0 only. `manifest.json` records the hash and checker version;

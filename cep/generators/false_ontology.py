@@ -21,6 +21,21 @@ CASES = [
     ("ice cube", "stove", "object", "hot", "cold"),
     ("crocodile", "bird", "animal", "feathered", "scaly"),
 ]
+# added for cep_v2 (cep_v1 used only the cases above)
+CASES_V2_EXTRA = [
+    ("goldfish", "mammal", "animal", "warm-blooded", "cold-blooded"),
+    ("horse", "insect", "creature", "six-legged", "four-legged"),
+    ("owl", "fish", "animal", "scaly", "feathered"),
+    ("ant", "mammal", "animal", "furry", "six-legged"),
+    ("tiger", "herbivore", "animal", "plant-eating", "meat-eating"),
+    ("strawberry", "vegetable", "food", "salty", "sweet"),
+    ("snowflake", "fire", "thing", "hot", "cold"),
+    ("glass window", "metal", "material", "opaque", "transparent"),
+    ("feather", "rock", "object", "heavy", "light"),
+    ("salmon", "bird", "animal", "winged", "finned"),
+    ("rabbit", "reptile", "animal", "scaly", "furry"),
+    ("camel", "fish", "animal", "gilled", "air-breathing"),
+]
 NAMES = ["Max", "Stella", "Sam", "Rex", "Wren", "Polly", "Fred", "Sally"]
 
 
@@ -28,14 +43,15 @@ def _a(noun: str) -> str:
     return ("an " if noun[0] in "aeiou" else "a ") + noun
 
 
-def generate(n: int) -> list[Item]:
+def generate(n: int, extra: bool = False) -> list[Item]:
+    cases = CASES + (CASES_V2_EXTRA if extra else [])
     items = []
     k = 0
     for depth in (1, 2):
         for negated in (False, True):
-            for ci, (ent, cat, broad, fake_prop, real_prop) in enumerate(CASES):
+            for ci, (ent, cat, broad, fake_prop, real_prop) in enumerate(cases):
                 name = NAMES[k % len(NAMES)]
-                other = CASES[(ci + 5) % len(CASES)]          # an unrelated true fact as a distractor
+                other = cases[(ci + 5) % len(cases)]          # an unrelated true fact as a distractor
                 carrier = cat if depth == 1 else broad
                 rules = [f"Every {ent} is {_a(cat)}."]
                 if depth == 2:

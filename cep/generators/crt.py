@@ -119,9 +119,112 @@ TEMPLATES = [bat_ball, widgets, doubling, overtaking, siblings, percent_round_tr
              fence_posts, stairs, clock_strikes]
 
 
-def generate(per_template: int, seed: int) -> list[Item]:
+# ---- added for cep_v2: ten more classic intuitive-error structures --------------------------------------
+
+def stacked_discount(r: random.Random):
+    a, b = r.choice([(20, 10), (30, 10), (20, 20), (40, 10), (25, 20), (50, 10), (30, 20), (10, 10), (40, 20), (50, 20)])
+    item = r.choice(["jacket", "pair of shoes", "laptop", "sofa", "bicycle", "watch"])
+    q = (f"A {item} is reduced by {a}%, and then the reduced price is cut by a further {b}%. "
+         f"By what percent has the original price been reduced in total?")
+    return q, 100 - Fraction(100 - a, 100) * (100 - b), a + b, dict(a=a, b=b)
+
+
+def reverse_percent(r: random.Random):
+    p = r.choice([20, 25, 50])
+    before = r.randrange(400, 4000, 200)          # keeps both the answer and the lure whole numbers
+    after = Fraction(before) * (100 + p) / 100
+    if after.denominator != 1:
+        return reverse_percent(r)
+    who = r.choice(["Ravi's salary", "The price of a ticket", "A town's population", "The rent"])
+    q = (f"{who} went up by {p}% and is now {int(after)}. What was it before the increase?")
+    return q, before, after * (100 - p) / 100, dict(p=p, after=int(after))
+
+
+def cut_log(r: random.Random):
+    n, m = r.randint(4, 15), r.randint(2, 9)
+    thing = r.choice(["a log", "a metal pipe", "a long plank", "a rope"])
+    q = (f"It takes {m} minutes to make one cut through {thing}. How many minutes does it take to cut it "
+         f"into {n} pieces?")
+    return q, (n - 1) * m, n * m, dict(n=n, m=m)
+
+
+def pills(r: random.Random):
+    n, gap = r.randint(3, 12), r.choice([15, 20, 30, 45, 60])
+    q = (f"A doctor gives you {n} pills and tells you to take one every {gap} minutes, starting now. "
+         f"How many minutes will it take until you have taken all of them?")
+    return q, (n - 1) * gap, n * gap, dict(n=n, gap=gap)
+
+
+def inclusive_days(r: random.Random):
+    a = r.randint(1, 15)
+    b = a + r.randint(3, 14)
+    event = r.choice(["A festival", "A conference", "An exhibition", "A training course"])
+    month = r.choice(["March", "May", "July", "October"])
+    q = (f"{event} runs from {month} {a} to {month} {b}, including both of those days. On how many days is it held?")
+    return q, b - a + 1, b - a, dict(a=a, b=b)
+
+
+def snail_well(r: random.Random):
+    up = r.randint(3, 7)
+    down = r.randint(1, up - 1)
+    depth = up + (up - down) * r.randint(3, 12)
+    q = (f"A snail is at the bottom of a {depth}-meter well. Each day it climbs {up} meters, and each night "
+         f"it slips back {down} meters. On which day does it reach the top?")
+    correct = (depth - up) // (up - down) + 1
+    lure = Fraction(depth, up - down)
+    if lure == correct:
+        return snail_well(r)
+    return q, correct, lure, dict(up=up, down=down, depth=depth)
+
+
+def weighted_average(r: random.Random):
+    while True:
+        n1, n2 = r.randint(10, 40), r.randint(10, 40)
+        a, b = r.randint(55, 90), r.randint(55, 90)
+        if n1 != n2 and a != b and (n1 * a + n2 * b) % (n1 + n2) == 0 and (a + b) % 2 == 0:
+            break
+    q = (f"Class A has {n1} students with an average score of {a}. Class B has {n2} students with an average "
+         f"score of {b}. What is the average score of all the students together?")
+    return q, Fraction(n1 * a + n2 * b, n1 + n2), Fraction(a + b, 2), dict(n1=n1, n2=n2, a=a, b=b)
+
+
+PIPE_PAIRS = [(3, 6), (4, 12), (6, 12), (10, 15), (12, 24), (20, 30), (6, 30), (12, 36), (15, 30), (30, 60),
+              (5, 20), (18, 36)]
+
+
+def pipes_together(r: random.Random):
+    a, b = r.choice(PIPE_PAIRS)
+    q = (f"One pipe can fill a tank in {a} hours. A second pipe can fill the same tank in {b} hours. "
+         f"If both pipes are open, how many hours does it take to fill the empty tank?")
+    return q, Fraction(a * b, a + b), Fraction(a + b, 2), dict(a=a, b=b)
+
+
+def handshakes(r: random.Random):
+    n = r.randint(5, 30)
+    who = r.choice(["people at a meeting", "players on a team", "guests at a party", "students in a club"])
+    q = f"There are {n} {who}. Each of them shakes hands exactly once with every other one. How many handshakes are there?"
+    return q, n * (n - 1) // 2, n * (n - 1), dict(n=n)
+
+
+def all_but(r: random.Random):
+    total = r.randint(12, 40)
+    keep = r.randint(3, total - 3)
+    if keep * 2 == total:
+        return all_but(r)
+    animal, verb = r.choice([("sheep", "run away"), ("chickens", "escape"), ("goats", "wander off"),
+                             ("ducks", "fly away"), ("cows", "break out")])
+    q = f"A farmer has {total} {animal}. All but {keep} of them {verb}. How many {animal} does the farmer have left?"
+    return q, keep, total - keep, dict(total=total, keep=keep)
+
+
+TEMPLATES_V2_EXTRA = [stacked_discount, reverse_percent, cut_log, pills, inclusive_days, snail_well,
+                      weighted_average, pipes_together, handshakes, all_but]
+
+
+def generate(per_template: int, seed: int, extra: bool = False) -> list[Item]:
+    """extra=False reproduces cep_v1's ten templates exactly; extra=True adds the ten cep_v2 templates."""
     items = []
-    for ti, fn in enumerate(TEMPLATES):
+    for ti, fn in enumerate(TEMPLATES + (TEMPLATES_V2_EXTRA if extra else [])):
         r = random.Random(seed * 1000 + ti)
         seen: set[str] = set()
         while len(seen) < per_template:
