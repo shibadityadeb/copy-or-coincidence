@@ -130,6 +130,12 @@ What a conference reviewer will test, and how this project answers it. Each row 
 
 ## 5. Findings
 
+### 2026-10-02: Third-family screening, round 1 (60 `cep_v2` items × 3, run twice)
+- **Phi-4-mini: ineligible.** Accuracy 58.3% (rerun 57.8%) vs OLMo 93.0% on the same items (gap 34.7 points);
+  readable answers 88.3% (< 95% rule); 5.6% truncated. By family: logic 100%, trick 60%, math 44% (OLMo 100 / 90 / 100).
+- **Nemotron-Nano-9B-v2: not run** — runner bug on this branch (the engine-argument pass-through from
+  `gemma/flex-attention` had not been brought over, so `trust_remote_code` was rejected). Fixed; rerunning.
+
 ### 2026-10-02: Experiment 7, sequential exposure — **H1–H5 all supported** (pre-registered in `prereg/exp7_sequential_exposure.md`)
 OLMo-3-7B, 600 `cep_v2` items × R = 5 per condition (12,000 receiver answers, 2.1 GPU-h). Receiver sees a
 sender's Layer 0 sample 10–14 (or a uniformly random candidate answer); nulls from Layer 0 samples 0–9.
