@@ -1,0 +1,13 @@
+{
+  "experiment_id": "screen_nemotron",
+  "description": "Third-family screening (rule in docs/RESEARCH_LOG.md, decided before running): 60-item cep_v2 round-robin slice, K=3, run twice.",
+  "items": "datasets/cep_v2/items.jsonl",
+  "n_items": 60,
+  "k": 3,
+  "agents": [
+    "configs/agents/nemotron_nano9b_A.json"
+  ],
+  "backend": "vllm",
+  "batch_size": 256,
+  "out_dir": "outputs/screen_nemotron"
+}

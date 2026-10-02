@@ -112,11 +112,14 @@ class MLXBackend(Backend):
 
 
 class VLLMBackend(Backend):
+    """Any extra key in an agent config's "vllm" block is passed to vllm.LLM unchanged
+    (e.g. "attention_backend": "FLEX_ATTENTION")."""
     name = "vllm"
 
     def __init__(self, repo: str, revision: str, dtype: str = "float16", tensor_parallel_size: int = 1,
                  max_model_len: int = 4096, gpu_memory_utilization: float = 0.90, max_num_seqs: int = 128,
-                 enable_prefix_caching: bool = False, limit_mm_per_prompt: Optional[dict] = None):
+                 enable_prefix_caching: bool = False, limit_mm_per_prompt: Optional[dict] = None,
+                 **engine_kwargs):
         import vllm
         from vllm import LLM
 
@@ -124,7 +127,7 @@ class VLLMBackend(Backend):
         self.llm = LLM(model=repo, revision=revision, dtype=dtype, tensor_parallel_size=tensor_parallel_size,
                        max_model_len=max_model_len, gpu_memory_utilization=gpu_memory_utilization,
                        max_num_seqs=max_num_seqs, enable_prefix_caching=enable_prefix_caching, seed=0,
-                       **({"limit_mm_per_prompt": mm} if mm else {}))
+                       **({"limit_mm_per_prompt": mm} if mm else {}), **engine_kwargs)
         self.tok = self.llm.get_tokenizer()
         self.framework_version = f"vllm {vllm.__version__}"
         self.quantization, self.dtype = "none", dtype

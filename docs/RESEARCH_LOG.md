@@ -87,6 +87,8 @@ candidate model's training cutoff.
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
+| 2026-10-02 | **Third family = Nemotron-Nano-9B-v2** (by the rule in the next row; Phi-4-mini ineligible) | Only eligible candidate; closest stated cutoff (Sep 2024) and size (8.9B) to OLMo; 5.3 points from OLMo's accuracy on the screening items | — |
+| 2026-10-02 | **Third-family selection rule, fixed before screening:** candidates with a *stated* training cutoff near OLMo's (Dec 2024) and comparable size — Nemotron-Nano-9B-v2 (NVIDIA, 8.9B, Sep 2024) and Phi-4-mini (Microsoft, 3.8B, Jun 2024) — run on the same 60-item `cep_v2` slice (K = 3, twice). Eligible if ≥ 95% readable and final answers stable; choose the eligible one closest to OLMo's accuracy on those items; tie (< 2 points) → closer cutoff. *Note: this row was meant to be added before screening, but the edit did not apply on this branch (wrong text anchor). The rule was nevertheless fixed before any result, in commit `d83a899`'s message and in `experiments/screen_*.json`.* | Shibaditya asked for comparable cutoff, size and task ability; public benchmark tables use incompatible setups, so ability is measured on our own items (the guide's "matched capability") | SmolLM3, Ministral-3, Granite-4, Falcon-H1, InternLM3 (no stated cutoff) |
 | 2026-10-02 | Syllogisms: "unanswerable" stays a wrong, distinct answer (original scoring kept) | Valid answers are Yes/No; "unanswerable" is a different response from "No", so merging them would change what counts as agreement; keeps the pre-registered scoring with no post-hoc change | Score it as "No" (PR #3, closed); count it correct but distinct |
 | 2026-10-02 | Release `cep_v2` on Hugging Face as `copy-or-coincidence`, CC-BY-4.0, public, with a canary string on every row; **upload deferred to the end of the project** (Shibaditya) | Citable, reproducible; canary lets model trainers exclude it. Deferring lets late tweaks go into the released version | Upload now; gated access; CC-BY-NC |
 | 2026-10-02 | **OLMo-3-7B is the main model; Gemma-4-E4B the second family** (agreed with Shibaditya) | OLMo runs reliably on T4, has public training data (strongest no-contamination evidence), and makes lure errors (9/60 in E0) — shared wrong answers are what we study | Gemma main (blocked on T4 attention kernel); Qwen3.5 (no stated cutoff, 98% accurate → few errors) |
@@ -129,6 +131,15 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
+
+### 2026-10-02: Third-family screening, round 1 (60 `cep_v2` items × 3, run twice)
+- **Phi-4-mini: ineligible.** Accuracy 58.3% (rerun 57.8%) vs OLMo 93.0% on the same items (gap 34.7 points);
+  readable answers 88.3% (< 95% rule); 5.6% truncated. By family: logic 100%, trick 60%, math 44% (OLMo 100 / 90 / 100).
+- **Nemotron-Nano-9B-v2: eligible and selected.** After fixing a runner bug on this branch (engine-argument
+  pass-through missing, so `trust_remote_code` was rejected), rerun: accuracy 87.8% (rerun 87.2%) vs OLMo
+  93.0% (gap 5.3 points); readable 100%; final answers stable 99.4%; truncated 3.3%; median 106 tokens; no
+  thinking text in any reply (`/no_think` works). By family: logic 100%, trick 88%, math 83%.
+- **Decision by the pre-stated rule: Nemotron-Nano-9B-v2 is the third family.**
 
 ### 2026-10-02: Experiment 7, sequential exposure — **H1–H5 all supported** (pre-registered in `prereg/exp7_sequential_exposure.md`)
 OLMo-3-7B, 600 `cep_v2` items × R = 5 per condition (12,000 receiver answers, 2.1 GPU-h). Receiver sees a

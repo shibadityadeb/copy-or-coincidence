@@ -80,6 +80,8 @@ def execute(specs: list[Spec], agent: dict, backend: Backend, out_path: Path, ex
             batch_size: int = 64, log=print) -> int:
     """Generate, grade and append rows for every spec not already in out_path."""
     system, prompt_hash = load_prompt(agent["prompt"])
+    if agent.get("system_suffix"):          # e.g. Nemotron's "/no_think"; its chat template strips the tag again
+        system = f"{system}\n{agent['system_suffix']}"
     done = done_ids(out_path)
     todo = [s for s in specs if s.trial_id not in done]
     log(f"{len(done)} trials already done, {len(todo)} to run")
