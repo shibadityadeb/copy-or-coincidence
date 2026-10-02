@@ -42,6 +42,9 @@ def main(path_a, path_b):
     for scope in ("overall", "lure", "logic", "math"):
         for m in ("joint_error", "same_answer", "same_wrong_answer", "both_lure"):
             r = report[scope][m]
+            if r["n_items"] == 0:      # e.g. both_lure within math: cep_v2 math items have no lure
+                print(f"{scope:8s} {m:18s} n/a (no items in scope)")
+                continue
             ok = r["ci95"][0] <= 0 <= r["ci95"][1] and abs(r["residual"]) < 0.02
             passed &= ok
             print(f"{scope:8s} {m:18s} obs {r['observed']:.3f} exp {r['expected']:.3f} "

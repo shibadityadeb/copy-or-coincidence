@@ -35,9 +35,9 @@ evaluation, and does who-speaks-first matter.
 | 2 | Model runner (Mac + Kaggle), Experiment 0 sanity | ✅ 2026-10-01 (one open item: GPU wording drift, see Findings) |
 | 2b | Contamination-proof setup: OLMo-3-7B main model + generated-only `cep_v2` (600 items) | ✅ 2026-10-02 |
 | 2a | Item audit: independent solver on all 600 keys ✅; LLM wording review of 30 ✅ (2 design flaws fixed); human audit 30/30 ✅ | ✅ 2026-10-02 |
-| 3 | Layer 0: each agent answers all 600 items × 20 alone (Kaggle) | ⏳ after audit |
+| 3 | Layer 0: each agent answers all 600 items × 20 alone (Kaggle) | ✅ 2026-10-02 (24,000 answers, 3.4 GPU-h) |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
-| 5 | Null-model code (`coc/nulls.py`) ✅ validated on simulated data; Experiment 1 on real data ⏳ after Layer 0 | 🔄 |
+| 5 | Null-model code validated on simulated data; **Experiment 1 PASS** on real data | ✅ 2026-10-02 |
 | 6 | Experiment 7: A→B, B→A, random-answer control | ⏳ |
 | 7 | Analysis + write-up | ⏳ |
 | 8 | Publish dataset on Hugging Face as `copy-or-coincidence` (CC-BY-4.0, public, canary GUID `92afb6b4-…`) | ⏳ **at the end**, after final tweaks; prepared by `release/make_hf_release.py` |
@@ -87,6 +87,7 @@ candidate model's training cutoff.
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
+| 2026-10-02 | Syllogisms: "unanswerable" stays a wrong, distinct answer (original scoring kept) | Valid answers are Yes/No; "unanswerable" is a different response from "No", so merging them would change what counts as agreement; keeps the pre-registered scoring with no post-hoc change | Score it as "No" (PR #3, closed); count it correct but distinct |
 | 2026-10-02 | Release `cep_v2` on Hugging Face as `copy-or-coincidence`, CC-BY-4.0, public, with a canary string on every row; **upload deferred to the end of the project** (Shibaditya) | Citable, reproducible; canary lets model trainers exclude it. Deferring lets late tweaks go into the released version | Upload now; gated access; CC-BY-NC |
 | 2026-10-02 | **OLMo-3-7B is the main model; Gemma-4-E4B the second family** (agreed with Shibaditya) | OLMo runs reliably on T4, has public training data (strongest no-contamination evidence), and makes lure errors (9/60 in E0) — shared wrong answers are what we study | Gemma main (blocked on T4 attention kernel); Qwen3.5 (no stated cutoff, 98% accurate → few errors) |
 | 2026-10-02 | **Grow `cep_v2` to 600 items, 20 trick templates** | Guide's power table: 300 items × 5 runs detects a 10-point residual reliably but a 5-point one only ~80%; 400+ items for 90%. More templates guard against "the result is about 10 riddles" and support a template random effect | Keep 300 (underpowered for small effects) |
@@ -113,7 +114,7 @@ What a conference reviewer will test, and how this project answers it. Each row 
 
 | Threat / reviewer question | Our answer | Status |
 |---|---|---|
-| Wrong baseline (difficulty confound) | Item-conditioned null; **Experiment 1 must give residual ≈ 0** for non-interacting agents | ⏳ |
+| Wrong baseline (difficulty confound) | Item-conditioned null; **Experiment 1 must give residual ≈ 0** for non-interacting agents | ✅ PASS (all 15 applicable tests) |
 | Training-data contamination | All 600 items generated fresh (`cep_v2`); main model's training data (Dolma 3) is public → search it for item text | ✅ items / ⏳ search |
 | Answer keys wrong or ambiguous | Independent second solver re-derives all 600 keys (`analysis/verify_keys.py`, run in the test suite) + LLM wording review + human spot-check with a pre-stated exclusion rule | ✅ solver + review + human 30/30 |
 | Grading wrong | Code-only grading; validate on 150 human-labelled answers (≥95% correct/incorrect, ≥85% error class); checker frozen and hashed | ⏳ |
@@ -128,6 +129,42 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
+
+### 2026-10-02: Experiment 1, independent duplicates — **PASS** (pre-registered in `prereg/exp1_independent_duplicates.md`)
+OLMo-3-7B agents A and B (same weights, different seeds, no interaction), 600 `cep_v2` items; samples
+0–9 estimate each agent's per-item distribution, samples 10–19 form 10 observed A/B pairs per item.
+
+| Scope | Joint error residual [95% CI] | Same answer | Same wrong answer | Both on lure | Naive global "excess" |
+|---|---|---|---|---|---|
+| Overall (600) | +0.0003 [−0.0041, +0.0045] | −0.0051 [−0.0131, +0.0029] | −0.0019 [−0.0061, +0.0022] | −0.0018 [−0.0062, +0.0028] | **+0.0651** |
+| Trick questions | −0.0008 [−0.0086, +0.0071] | −0.0010 [−0.0153, +0.0131] | −0.0037 [−0.0108, +0.0036] | −0.0027 [−0.0092, +0.0041] | +0.0478 |
+| Logic | +0.0025 [−0.0046, +0.0093] | −0.0092 [−0.0236, +0.0056] | +0.0003 [−0.0086, +0.0094] | 0.0000 | +0.0962 |
+| Math | −0.0007 [−0.0067, +0.0055] | −0.0052 [−0.0194, +0.0074] | −0.0025 [−0.0087, +0.0035] | n/a (no lures) | +0.0480 |
+
+- Every applicable residual has a CI containing 0 and |residual| < 0.005 → **pre-registered pass rule met**.
+- The naive global baseline reports +4.8 to +9.6 points of spurious "excess joint error" for agents that
+  never interacted: the difficulty confound, measured on real LLM data.
+- One permutation p below 0.05 (logic joint error, p = 0.028) among 15 tests; ~0.75 expected by chance,
+  and its CI contains 0. The pass rule was defined on CI and magnitude, not p.
+- **Analysis-script bug, fixed (not a change to the rule):** `exp1.py` first reported FAIL because
+  "both on lure" within math has zero items (cep_v2 math has no lures) and produced NaN. The
+  pre-registration defines that metric on lure items only; it is now reported as n/a.
+
+### 2026-10-02: Layer 0 descriptives (OLMo-3-7B, 24,000 answers)
+- Valid JSON 99.5%, unreadable 0.6%, truncated 0.5%, median 116 output tokens. Agents A and B both 87.3%.
+- Accuracy: false-world 99.3%; math complete 99.4%; trick questions 88.4% (lure 7.7% of answers);
+  missing-premise 81.8% (answered with a number 17%); syllogisms 66.5% (see below).
+- 53% of items always right, 1.7% always wrong, **45% mixed**: enough within-item variability for the null.
+- **Syllogism "unanswerable" replies (decided: scored as wrong):** on invalid syllogisms (key No) the model
+  answered "unanswerable" 1,042/2,000 times, often after reasoning "the conclusion does not follow"; it did so
+  88/2,000 times on valid ones. Likely trigger: the solver prompt's rule "if the question cannot be answered …
+  give unanswerable" next to "Does it logically follow?". Read as "does not follow", syllogism accuracy would
+  be 92.6% instead of 66.5%.
+  **Decision (Shibaditya, 2026-10-02): "unanswerable" is a distinct answer. The valid answers are Yes/No, so it
+  is scored wrong and is never the same answer as "No".** This is the original, pre-registered scoring
+  (checker `f7805da13b9b`); nothing is re-graded. Two agents both answering "unanswerable" count as the same
+  wrong answer, which they are. A re-grade treating it as "No" was prepared and rejected (PR #3, closed);
+  Experiment 1 passed under that alternative too. Report syllogism accuracy with this caveat.
 
 ### 2026-10-02: Null-model code validated on simulated data (`coc/tests/test_nulls.py`)
 400 simulated items with strong difficulty heterogeneity (difficulty ~ Beta(0.6, 0.6)), 4 answer options
