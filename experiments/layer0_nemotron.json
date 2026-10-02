@@ -1,0 +1,13 @@
+{
+  "experiment_id": "layer0_nemotron",
+  "description": "Replication, third family (prereg/replication_nemotron.md): Nemotron-Nano-9B-v2 agents A and B each answer all 600 cep_v2 items K=20 times independently (24,000 answers).",
+  "items": "datasets/cep_v2/items.jsonl",
+  "k": 20,
+  "agents": [
+    "configs/agents/nemotron_nano9b_A.json",
+    "configs/agents/nemotron_nano9b_B.json"
+  ],
+  "backend": "vllm",
+  "batch_size": 512,
+  "out_dir": "outputs/layer0_nemotron"
+}
