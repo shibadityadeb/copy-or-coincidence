@@ -34,7 +34,7 @@ evaluation, and does who-speaks-first matter.
 | 1 | Item set `cep_v1` + programmatic checker + tests | ✅ 2026-10-01 |
 | 2 | Model runner (Mac + Kaggle), Experiment 0 sanity | ✅ 2026-10-01 (one open item: GPU wording drift, see Findings) |
 | 2b | Contamination-proof setup: OLMo-3-7B main model + generated-only `cep_v2` (600 items) | ✅ 2026-10-02 |
-| 2a | Item audit: independent solver on all 600 keys ✅; LLM wording review of 30 ✅ (2 design flaws fixed); human spot-check ⏳ (non-blocking, see exclusion rule) | ✅ 2026-10-02 |
+| 2a | Item audit: independent solver on all 600 keys ✅; LLM wording review of 30 ✅ (2 design flaws fixed); human audit 30/30 ✅ | ✅ 2026-10-02 |
 | 3 | Layer 0: each agent answers all 600 items × 20 alone (Kaggle) | ⏳ after audit |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
 | 5 | Null-model code (`coc/nulls.py`) ✅ validated on simulated data; Experiment 1 on real data ⏳ after Layer 0 | 🔄 |
@@ -113,7 +113,7 @@ What a conference reviewer will test, and how this project answers it. Each row 
 |---|---|---|
 | Wrong baseline (difficulty confound) | Item-conditioned null; **Experiment 1 must give residual ≈ 0** for non-interacting agents | ⏳ |
 | Training-data contamination | All 600 items generated fresh (`cep_v2`); main model's training data (Dolma 3) is public → search it for item text | ✅ items / ⏳ search |
-| Answer keys wrong or ambiguous | Independent second solver re-derives all 600 keys (`analysis/verify_keys.py`, run in the test suite) + LLM wording review + human spot-check with a pre-stated exclusion rule | ✅ solver + review / ⏳ human |
+| Answer keys wrong or ambiguous | Independent second solver re-derives all 600 keys (`analysis/verify_keys.py`, run in the test suite) + LLM wording review + human spot-check with a pre-stated exclusion rule | ✅ solver + review + human 30/30 |
 | Grading wrong | Code-only grading; validate on 150 human-labelled answers (≥95% correct/incorrect, ≥85% error class); checker frozen and hashed | ⏳ |
 | Underpowered | 600 items; simulate power from real Layer-0 distributions before fixing R for Exp 7 | ⏳ |
 | Result specific to one model | Replicate on a second family (Gemma-4-E4B) and report sign + magnitude | ⏳ |
@@ -152,7 +152,7 @@ A's answer with known probability c.
    chaining over the stated rules; trick questions by simulation from stored parameters (count
    handshakes, step the snail, etc.); math by separately written formulas.
 2. *LLM wording review* (Claude) of the 30-item audit sample, for ambiguity the solver cannot see.
-3. *Human spot-check* by Shibaditya (pending). **Pre-stated exclusion rule:** any item a human finds
+3. *Human audit* by Shibaditya Deb, 2026-10-02: **30/30 sampled items agree with the key, 0 flagged as unclear** (`datasets/cep_v2/human_audit.csv`, 10 per family, answered independently). **Pre-stated exclusion rule:** any item a human finds
    wrong or ambiguous after Layer 0 is excluded from all analyses (not re-run), and the exclusion is reported.
 
 **Found and fixed:**

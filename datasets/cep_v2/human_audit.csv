@@ -1,0 +1,31 @@
+item_id,human_answer,key,agrees,unclear,auditor,date,notes
+cep_v2-lure-035,7,7,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-146,12,12,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-196,8,8,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-017,12,12,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-066,60,60,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-031,9,9,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-127,50,50,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-195,6,6,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-116,1000,1000,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-lure-121,(confirmed key),32,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-logic-167,FALSE,FALSE,yes,no,Shibaditya Deb,2026-10-02,answered No
+cep_v2-logic-098,FALSE,FALSE,yes,no,Shibaditya Deb,2026-10-02,answered No
+cep_v2-logic-054,(confirmed key),TRUE,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-logic-025,(confirmed key),TRUE,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-logic-125,(confirmed key),FALSE,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-logic-111,FALSE,FALSE,yes,no,Shibaditya Deb,2026-10-02,answered No
+cep_v2-logic-156,FALSE,FALSE,yes,no,Shibaditya Deb,2026-10-02,answered No
+cep_v2-logic-196,TRUE,TRUE,yes,no,Shibaditya Deb,2026-10-02,answered Yes
+cep_v2-math-197,(confirmed key),UNANSWERABLE,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-math-001,(confirmed key),12,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-math-179,(confirmed key),UNANSWERABLE,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-math-115,(confirmed key),UNANSWERABLE,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-math-069,(confirmed key),2,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-math-185,(confirmed key),665,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-math-059,UNANSWERABLE,UNANSWERABLE,yes,no,Shibaditya Deb,2026-10-02,"auditor: too few weeks would make savings negative, so the vague quantity is constrained but still not determined; answering a number is not justified"
+cep_v2-math-152,(confirmed key),UNANSWERABLE,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-math-027,(confirmed key),126,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-math-082,(confirmed key),25,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-logic-008,TRUE,TRUE,yes,no,Shibaditya Deb,2026-10-02,
+cep_v2-logic-100,FALSE,FALSE,yes,no,Shibaditya Deb,2026-10-02,
