@@ -37,7 +37,7 @@ evaluation, and does who-speaks-first matter.
 | 2a | Item audit: independent solver on all 600 keys ✅; LLM wording review of 30 ✅ (2 design flaws fixed); human spot-check ⏳ (non-blocking, see exclusion rule) | ✅ 2026-10-02 |
 | 3 | Layer 0: each agent answers all 600 items × 20 alone (Kaggle) | ⏳ after audit |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
-| 5 | Null-model code + Experiment 1 (independent agents must give residual ≈ 0) | ⏳ |
+| 5 | Null-model code (`coc/nulls.py`) ✅ validated on simulated data; Experiment 1 on real data ⏳ after Layer 0 | 🔄 |
 | 6 | Experiment 7: A→B, B→A, random-answer control | ⏳ |
 | 7 | Analysis + write-up | ⏳ |
 
@@ -126,6 +126,23 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
+
+### 2026-10-02: Null-model code validated on simulated data (`coc/tests/test_nulls.py`)
+400 simulated items with strong difficulty heterogeneity (difficulty ~ Beta(0.6, 0.6)), 4 answer options
+incl. a lure; distributions estimated on 10 held-out samples per agent, 10 paired runs per item; B copies
+A's answer with known probability c.
+
+| True copy rate c | Naive global "excess" (both wrong) | Item-conditioned residual, same answer [95% CI] | Permutation p | True residual c·(1 − E[same]) |
+|---|---|---|---|---|
+| 0% | **+0.116** (spurious) | **−0.003** [−0.020, +0.015] | 0.256 | 0.000 |
+| 5% | +0.123 | +0.021 [+0.004, +0.038] | 0.003 | +0.023 |
+| 10% | +0.129 | +0.043 [+0.026, +0.061] | 0.003 | +0.046 |
+| 20% | +0.142 | +0.088 [+0.070, +0.106] | 0.003 | +0.091 |
+
+- The naive baseline reports a large "excess" with **no** dependence, and barely moves as real copying
+  goes from 0% to 20%: it measures difficulty, not interaction.
+- The item-conditioned residual is ≈ 0 without copying and recovers the true effect within ~0.003.
+- Passes the guide's month-2 gate ("nulls.py recovers known c").
 
 ### 2026-10-02: Item audit of `cep_v2` (before any model sees it)
 **How (report this in the paper's Methods):**
