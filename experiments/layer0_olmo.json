@@ -1,0 +1,13 @@
+{
+  "experiment_id": "layer0_olmo",
+  "description": "Layer 0: OLMo-3-7B agents A and B each answer all 600 cep_v2 items K=20 times independently (24,000 answers). Source of per-item answer distributions for every null model.",
+  "items": "datasets/cep_v2/items.jsonl",
+  "k": 20,
+  "agents": [
+    "configs/agents/olmo3_7b_A.json",
+    "configs/agents/olmo3_7b_B.json"
+  ],
+  "backend": "vllm",
+  "batch_size": 512,
+  "out_dir": "outputs/layer0_olmo"
+}
