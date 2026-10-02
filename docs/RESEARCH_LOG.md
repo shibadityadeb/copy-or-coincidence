@@ -105,6 +105,15 @@ candidate model's training cutoff.
 
 ## 5. Findings
 
+### 2026-10-02: Experiment 0 for OLMo-3-7B-Instruct (20 `cep_v1` items × 3, vLLM fp16, 2× T4)
+- Accuracy 82%; **9 of 60 answers hit the lure** (siblings 5/6, overtaking 4/6), vs 1/60 for Qwen3.5-4B.
+  For this project that is useful: shared *wrong* answers are what we measure, and a 98%-accurate model
+  leaves almost none.
+- 100% valid JSON (structured decoding), no truncation, median 133 output tokens, ~0.9 s per answer.
+- Rerun: final answers 60/60 identical, text 58/60 identical (prefix caching off; better than Qwen's 50/60).
+- Gemma-4-E4B retry did not actually test FlexAttention: vLLM 0.30 ignored the `VLLM_ATTENTION_BACKEND`
+  environment variable and used Triton again, failing the same way.
+
 ### 2026-10-01: Experiment 0 on Kaggle (20 items × 3, vLLM 0.30.0, fp16, 1× T4)
 | | Free decoding | Structured JSON decoding |
 |---|---|---|
@@ -146,6 +155,7 @@ candidate model's training cutoff.
 
 | Date | Problem | Fix |
 |---|---|---|
+| 2026-10-02 | Gemma retry used the wrong switch: vLLM 0.30 ignores the `VLLM_ATTENTION_BACKEND` env var | Must pass the backend through the engine arguments instead; untested so far |
 | 2026-10-02 | Gemma-4-E4B would not start on T4 (`exp0_gemma` v1): vLLM's Triton attention kernel needs 96 KB of on-chip shared memory for Gemma-4's large attention heads; the T4 has 64 KB. Not a float16 problem | Retrying with vLLM's FlexAttention backend; OLMo-3-7B tested in the same Kaggle job as the fallback. Jobs can now run several experiments, each in its own process |
 | 2026-10-02 | Reasoning Gym math generator: wrong answer keys and unused numbers | Wrote `math_word.py`: 10 templates, every quantity used, exact integer answers; a test perturbs each hidden quantity and checks the answer changes |
 | 2026-10-02 | Reasoning Gym syllogisms: 71% "Yes" and some keys depend on existential import | Balanced 25/25; dropped "Yes" + "Some…" conclusions; test enforces it |
