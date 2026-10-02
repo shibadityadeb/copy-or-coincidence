@@ -347,3 +347,49 @@ Entries follow the guide's template (§15): fields above the line are written **
 3. Checker validation: hand-label 150 answers from Layer 0 (target ≥ 95% on right/wrong, ≥ 85% on
    error class).
 4. Null-model code (`nulls.py`) + Experiment 1.
+
+## 9. Gap analysis against the field guide (2026-10-02)
+
+Re-read of `Excess_Error_Correlation_Field_Guide_1.pdf` after Experiment 7, to find what the project still lacks.
+The checklist version of this lives in `docs/PROJECT_PLAN.md` §5 (D–G).
+
+**Covered well:** item-conditioned nulls N2/N3 (validated, Experiment 1 PASS); disjoint samples for expected vs
+observed; within-item permutation; item bootstrap; Holm; pre-registration (≤ 5 hypotheses); Experiment 7 with
+steps vs answer-only and the random-answer control (C); programmatic, frozen, hashed checker with no LLM labels
+in residuals; checker validation (blind reader; human adjudication pending); fresh, verified items;
+replication on other families (in progress); reproducibility (pinned versions, CI, append-only logs).
+
+**🔴 Critical gaps** (central in the guide; reviewers will ask)
+| # | Gap | Guide | Why it matters | GPU |
+|---|---|---|---|---|
+| 1 | N4 mode-finding null on contested items (joint-mode mass < 0.7) | §5, §6, §15 | Formal test of "tipping": residual explained by N4 = interaction reveals a shared prior; residual N4 cannot explain = cascades, sycophancy, persuasion | no |
+| 2 | Helpful vs harmful flips (h, g) and content-blind flip | §4, §11, §15 | Copying vs evaluating; needs an answer-first-then-revise protocol | yes |
+| 3 | Three-way error decomposition: shared / interaction-created (g in B minus C) / interaction-amplified (lure beyond N4) | §8 | Our split is two-way only | partly |
+| 4 | Mixed-effects logistic model (condition × family × error type; item + template random effects); paired McNemar | §10, §12 | Required factor-effect statistics | no |
+| 5 | Kim et al. / Goel et al. (CAPA) metrics computed on our data | §1.3, §15 | Named open question: how much population-level correlation survives item-conditioning | no |
+
+**🟠 Important gaps**
+| # | Gap | Guide | GPU |
+|---|---|---|---|
+| 6 | Q1 similarity across families at matched accuracy (JSD, error identity vs item baseline) | §1.2, Exp 4 | no (after all Layer 0 runs) |
+| 7 | Mechanism controls E (answer redacted), F (conclusion flipped, N10), G (displayed confidence), D (other-model answer) | §8 | yes |
+| 8 | Alternative explanations for Δ: formatting convergence; message restating the item | §6, §11 | partly |
+| 9 | Empirical power analysis from Layer 0 distributions | §10 | no |
+| 10 | Error identity P(same wrong \| both wrong) vs its item baseline; conditional mutual information | §4 | no |
+| 11 | Theory: relate the residual to Tumer–Ghosh ρ and Condorcet; implications for majority voting | §2, §12 L7 | no |
+| 12 | One intervention that moves the residual (answer-first, forced dissent "ally", missing-info warning) | §12 L5, §15 | yes |
+
+**🟡 Secondary / postponed:** 4th item family (constraint/planning); step-level signatures (N6, J_sig);
+debate rounds, chains of 3–4 agents (cascades), verifier lineage × error type (Exp 9); size ladder, prompt
+diversity, shared evidence (Exp 2, 5, 6); Layer 0 session-stability check (< 2 points); the three reasons an
+error survives (undetectable / talked out of it / detected but not repaired, §1.1).
+
+**Link to the "why" plan.** The guide's own definition of a contribution (§15) asks for a residual decomposed
+"by direction and flip asymmetry", evidence on how much interaction failure is predictable from independent
+distributions (N4), a mechanism with a pre-registered prediction surviving a randomised control, and an
+intervention that moves the residual. These map onto the four "why" depths in `docs/PROJECT_PLAN.md` §1;
+the OLMo-3 training-stage comparison answers the guide's open question on whether post-training changes which
+errors are shared.
+
+**Order agreed:** no-GPU items first (1, 3, 4, 5, 6, 9, 10, 11), then pre-registered new runs (2, 7, 12, and
+the training-stage comparison).
