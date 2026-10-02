@@ -109,6 +109,8 @@ def run_independent(items: list[Item], agent: dict, backend: Backend, k: int, ou
 
 
 def make_backend(agent: dict, backend: str) -> Backend:
+    import os
+    os.environ.update(agent.get("env", {}))
     if backend == "mlx":
         from coc.backends import MLXBackend
         return MLXBackend(agent["mlx_repo"], agent["mlx_revision"], agent["mlx_quantization"])

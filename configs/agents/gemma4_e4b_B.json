@@ -19,5 +19,8 @@
   "top_p": 0.95,
   "max_tokens": 1024,
   "enable_thinking": false,
-  "structured_output": true
+  "structured_output": true,
+  "env": {
+    "VLLM_ATTENTION_BACKEND": "FLEX_ATTENTION"
+  }
 }

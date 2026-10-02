@@ -120,9 +120,11 @@ class VLLMBackend(Backend):
         import vllm
         from vllm import LLM
 
+        mm = {"image": 0, "video": 0} if limit_mm_per_prompt is None else limit_mm_per_prompt
         self.llm = LLM(model=repo, revision=revision, dtype=dtype, tensor_parallel_size=tensor_parallel_size,
                        max_model_len=max_model_len, gpu_memory_utilization=gpu_memory_utilization,
-                       max_num_seqs=max_num_seqs, enable_prefix_caching=enable_prefix_caching, seed=0, limit_mm_per_prompt=limit_mm_per_prompt or {"image": 0, "video": 0})
+                       max_num_seqs=max_num_seqs, enable_prefix_caching=enable_prefix_caching, seed=0,
+                       **({"limit_mm_per_prompt": mm} if mm else {}))
         self.tok = self.llm.get_tokenizer()
         self.framework_version = f"vllm {vllm.__version__}"
         self.quantization, self.dtype = "none", dtype

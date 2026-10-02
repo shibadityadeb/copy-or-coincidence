@@ -17,7 +17,15 @@ sh("cd /kaggle/working/repo && pip install -q -e . --no-deps")
 sh("nvidia-smi --query-gpu=name,memory.total --format=csv")
 os.chdir("/kaggle/working/repo")
 os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
-sh(f"python -m coc.runner --experiment {EXPERIMENT} --run-id {RUN_ID}")
-exp = json.load(open(EXPERIMENT))
-shutil.copytree(exp["out_dir"], "/kaggle/working/outputs", dirs_exist_ok=True)
+failed = []
+for e in EXPERIMENT.split(","):            # several experiments per job amortise the GPU session
+    try:
+        sh(f"python -m coc.runner --experiment {e} --run-id {RUN_ID}")
+    except subprocess.CalledProcessError:
+        failed.append(e)
+        print(f"!!! {e} failed, continuing", flush=True)
+    out = json.load(open(e))["out_dir"]
+    if os.path.isdir(out):
+        shutil.copytree(out, f"/kaggle/working/outputs/{os.path.basename(out)}", dirs_exist_ok=True)
 shutil.rmtree("/kaggle/working/repo")
+print("FAILED:", failed, flush=True)

@@ -1,6 +1,6 @@
 """Send one experiment to Kaggle, wait for it, download its outputs.
 
-python kaggle/push.py experiments/exp0_kaggle.json [--run-id run1] [--no-wait]
+python kaggle/push.py experiments/exp0_kaggle.json[,experiments/other.json] [--run-id run1[,run2]] [--no-wait]
 
 The Kaggle job clones this repo at the current pushed commit, so commit + push first.
 """
@@ -33,8 +33,8 @@ def main():
     if not sh("git", "-C", str(ROOT), "branch", "-r", "--contains", commit):
         raise SystemExit(f"commit {commit[:8]} is not on GitHub yet: git push first")
 
-    exp = json.loads((ROOT / a.experiment).read_text())
-    slug = f"coc-{exp['experiment_id']}-{a.run_id}".replace("_", "-").replace(",", "-").lower()
+    exp_ids = [json.loads((ROOT / e).read_text())["experiment_id"] for e in a.experiment.split(",")]
+    slug = f"coc-{'-'.join(exp_ids)}-{a.run_id}".replace("_", "-").replace(",", "-").lower()[:50]
     job = ROOT / "kaggle" / "jobs" / slug
     job.mkdir(parents=True, exist_ok=True)
     src = (ROOT / "kaggle/layer0/layer0.py").read_text()
