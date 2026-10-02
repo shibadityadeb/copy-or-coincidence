@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install
+        run: |
+          uv venv .venv --python 3.11
+          uv pip install --python .venv/bin/python -e .
+
+      - name: Tests (checker, generators, runner, null models)
+        run: .venv/bin/python -m pytest -q -p no:warnings
+
+      - name: Independent solver confirms every cep_v2 answer key
+        run: .venv/bin/python analysis/verify_keys.py datasets/cep_v2/items.jsonl
+
+      - name: Item sets rebuild byte-identically (questions must never change silently)
+        run: |
+          for v in cep_v2 cep_v1; do
+            .venv/bin/python -m cep.build --version "$v" --out "/tmp/rebuild/$v" > /dev/null
+            if cmp "datasets/$v/items.jsonl" "/tmp/rebuild/$v/items.jsonl"; then
+              echo "$v: identical"
+            else
+              echo "::error::$v items changed on rebuild. Generators must not change a frozen item set."
+              exit 1
+            fi
+          done
