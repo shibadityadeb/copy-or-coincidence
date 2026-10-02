@@ -7,3 +7,4 @@ kaggle/*/output/
 *.egg-info/
 kaggle/jobs/
 release/hf/
+validation/checker_label_key.json
