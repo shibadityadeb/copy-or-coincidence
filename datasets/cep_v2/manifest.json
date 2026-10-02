@@ -1,0 +1,50 @@
+{
+  "version": "cep_v2",
+  "seed": 1,
+  "n_items": 300,
+  "items_sha256": "6a1afa1520172b6de310fea3f48c71fd85eab1254ae879b16ae7ef8837956481",
+  "normalizer_version": "1",
+  "parser_version": "1",
+  "checker_version": "f7805da13b9b",
+  "sources": {
+    "reasoning-gym (pip)": "0.1.25",
+    "generators": "cep/generators/*.py (this commit)"
+  },
+  "by_family": {
+    "lure": 100,
+    "logic": 100,
+    "math": 100
+  },
+  "by_template": {
+    "bat_ball": 10,
+    "widgets": 10,
+    "doubling": 10,
+    "overtaking": 10,
+    "siblings": 10,
+    "percent_round_trip": 10,
+    "average_speed": 10,
+    "fence_posts": 10,
+    "stairs": 10,
+    "clock_strikes": 10,
+    "false_ontology": 50,
+    "rg_syllogism": 50,
+    "math_shop_restock": 10,
+    "math_fuel_cost": 10,
+    "math_savings": 10,
+    "math_school_buses": 10,
+    "math_bakery_boxes": 10,
+    "math_garden_fence": 10,
+    "math_reading_days": 10,
+    "math_ticket_change": 10,
+    "math_tank_fill": 10,
+    "math_weekly_pay": 10
+  },
+  "by_cause": {
+    "intuitive_lure": 100,
+    "prior_override": 50,
+    "deduction_slip": 50,
+    "multi_step": 50,
+    "missing_premise": 50
+  },
+  "with_lure": 150
+}

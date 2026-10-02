@@ -33,7 +33,8 @@ evaluation, and does who-speaks-first matter.
 | 0 | Read guide, plain-language explainer | ✅ 2026-09-30 |
 | 1 | Item set `cep_v1` + programmatic checker + tests | ✅ 2026-10-01 |
 | 2 | Model runner (Mac + Kaggle), Experiment 0 sanity | ✅ 2026-10-01 (one open item: GPU wording drift, see Findings) |
-| 2a | Hand-audit 30 items (`datasets/cep_v1/audit_sample.md`) | ⏳ waiting on Shibaditya |
+| 2b | Switch to contamination-proof setup: Gemma-4-E4B + generated-only item set `cep_v2` | 🔄 items built ✅; Gemma float16 test running |
+| 2a | Hand-audit 30 items (`datasets/cep_v2/audit_sample.md`) | ⏳ waiting on Shibaditya |
 | 3 | Layer 0: each agent answers all 300 items × 20 alone (Kaggle) | ⏳ |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
 | 5 | Null-model code + Experiment 1 (independent agents must give residual ≈ 0) | ⏳ |
@@ -45,23 +46,31 @@ evaluation, and does who-speaks-first matter.
 ### Models
 | Role | Model | Exact version | Where | Notes |
 |---|---|---|---|---|
-| Agents A and B (MVP) | `Qwen/Qwen3.5-4B` | rev `851bf6e8` | Kaggle, vLLM, fp16 | Every reported number comes from here |
-| Mac development copy | `mlx-community/Qwen3.5-4B-4bit` | rev `0e7ffd5c` | Mac, mlx-lm, 4-bit | Dev only, never reported (different precision) |
-| Later: different family | Gemma-4-E4B (planned) | — | Kaggle | For same- vs different-family comparison |
+| **Agents A and B (MVP)** | `google/gemma-4-E4B-it` (8B total, ~4B effective) | rev `ee0ef602`; **training cutoff Jan 2025** (model card) | Kaggle, vLLM, fp16, both T4s (tensor parallel 2) | Pending float16 feasibility test |
+| **Second family (later)** | `allenai/Olmo-3-7B-Instruct` | **training cutoff Dec 2024**; training data public (Dolma 3) | Kaggle, both T4s | Lets us *prove* items were not in training data |
+| Superseded | `Qwen/Qwen3.5-4B` | rev `851bf6e8`; training cutoff **not stated** | Kaggle | Used for Exp 0 only; dropped because its training data can't be dated |
+| Mac development copy | `mlx-community/Qwen3.5-4B-4bit` | rev `0e7ffd5c` | Mac, mlx-lm, 4-bit | Dev only, never reported |
 
 Agent settings (`configs/agents/qwen35_4b_*.json`): temperature 0.7, top-p 0.95, max 1024 output
 tokens, thinking mode **off**, prompt `prompts/solver_v1.txt`, one fixed seed per answer derived from
 (agent, item, protocol, sample number).
 
-### Datasets
-| Dataset | Hugging Face id + revision | Licence | What we took |
-|---|---|---|---|
-| GSM-Plus | `qintongli/GSM-Plus` @ `3b708db5` | CC-BY-SA-4.0 | 50 missing-premise + 50 distractor math items |
-| ProntoQA | `renma/ProntoQA` @ `6f3e0386` | MIT | 50 fictional-word logic items |
-| (generated) | `cep/generators/crt.py` | ours | 100 trick questions, 10 templates, fresh numbers |
-| (generated) | `cep/generators/false_ontology.py` | ours | 50 false-world logic items |
+### Item set `cep_v2` (current): every item generated fresh, seed 1
+| Group | Generator | n | Lure | Error cause |
+|---|---|---|---|---|
+| Trick questions | `cep/generators/crt.py` (10 templates) | 100 | intuitive answer | `intuitive_lure` |
+| False-world logic | `cep/generators/false_ontology.py` | 50 | common-sense answer | `prior_override` |
+| Syllogisms (Yes/No), 25 valid + 25 invalid | Reasoning Gym 0.1.25 `syllogism` (Apache-2.0, first released Feb 2025), filtered | 50 | none | `deduction_slip` |
+| Math, complete | `cep/generators/math_word.py` (10 templates) | 50 | none | `multi_step` |
+| Math, one quantity made vague | same | 50 | none | `missing_premise` |
 
-Item set `cep_v1`: 300 items, 200 with a pre-specified lure, items hash in `datasets/cep_v1/manifest.json`.
+300 items, 150 with a lure; hash in `datasets/cep_v2/manifest.json`. No item exists in any public dataset,
+so no model's training data can contain it, whatever its cutoff.
+
+### Superseded item set `cep_v1` (kept frozen, used only for Exp 0)
+GSM-Plus (`qintongli/GSM-Plus` @ `3b708db5`, CC-BY-SA-4.0; 100 items), ProntoQA (`renma/ProntoQA` @ `6f3e0386`,
+MIT; 50 items), plus 150 generated items. Dropped because GSM-Plus (2024) and ProntoQA (2022) predate every
+candidate model's training cutoff.
 
 ### Tools and infrastructure
 | What | Version / detail |
@@ -77,6 +86,11 @@ Item set `cep_v1`: 300 items, 200 with a pre-specified lure, items hash in `data
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
+| 2026-10-02 | **Switch main model to Gemma-4-E4B; OLMo-3-7B as second family** | Both state a training cutoff (Jan 2025 / Dec 2024); OLMo publishes its training data; Qwen3.5 states no cutoff | Keep Qwen3.5; Phi-4-mini (cutoff Jun 2024, weaker) |
+| 2026-10-02 | **Generated-only item set `cep_v2`** | A freshly generated item cannot be in any training set, for any model, past or future; stronger than "dataset newer than cutoff" | Datasets released after the cutoff (LiveBench stopped updating Apr 2025; MathArena AIME/HMMT 2026: 30 items, too hard, non-commercial) |
+| 2026-10-02 | Own math generator instead of Reasoning Gym `gsm_symbolic` | In 4 sampled RG items: 1 had a wrong answer key (mixed €/cents, 574 pretzels), 1 contained an unused number; a missing-premise transform on such items could leave them answerable | Use RG math and audit by hand |
+| 2026-10-02 | Missing-premise math items have **no lure** | The hidden number is random, so no single wrong answer tempts; the error that matters is answering at all (`unanswerable_answered`) | Lure = answer with the hidden number (meaningless here) |
+| 2026-10-02 | Drop "Yes" syllogisms with a "Some…" conclusion | Valid only under Aristotelian existential import; modern logic says "No", so the key would be convention-dependent | Keep and accept ambiguous keys |
 | 2026-10-01 | Structured JSON decoding on for all agents (`structured_output: true`) | E0: 100% valid JSON vs 98%, same accuracy; removes a failure mode that could differ across question types | Free decoding + backup reader |
 | 2026-10-01 | Prefix caching off in vLLM | Suspected source of rerun drift; costs little because each prompt is short | Leave on, accept drift |
 | 2026-10-01 | vLLM on T4 runs Qwen3.5 in float16 (T4 has no bfloat16) | Hardware limit; vLLM casts automatically. Mac-vs-Kaggle accuracy in E0 checks it does no harm | Could not use bf16 |
@@ -132,6 +146,8 @@ Item set `cep_v1`: 300 items, 200 with a pre-specified lure, items hash in `data
 
 | Date | Problem | Fix |
 |---|---|---|
+| 2026-10-02 | Reasoning Gym math generator: wrong answer keys and unused numbers | Wrote `math_word.py`: 10 templates, every quantity used, exact integer answers; a test perturbs each hidden quantity and checks the answer changes |
+| 2026-10-02 | Reasoning Gym syllogisms: 71% "Yes" and some keys depend on existential import | Balanced 25/25; dropped "Yes" + "Some…" conclusions; test enforces it |
 | 2026-10-01 | A crash mid-write would glue the next row onto a half-written line, losing it | `repair_tail()` trims a torn last line before resuming; covered by a test |
 | 2026-10-01 | Model download stalled at 2.4/3 GB | Restarted; download resumes |
 | 2026-10-01 | `kaggle/push.py` wrongly said the commit wasn't on GitHub | Fixed the check |
@@ -161,10 +177,11 @@ Entries follow the guide's template (§15): fields above the line are written **
   wrong answer" counts, so they must be fixed before Layer 0.
 
 ## 8. Next steps
-1. **Shibaditya:** hand-audit the 30 items in `datasets/cep_v1/audit_sample.md` (items must be final
+1. Gemma-4-E4B float16 feasibility (`exp0_gemma`, running). If it fails → OLMo-3-7B as the main model.
+2. **Shibaditya:** hand-audit the 30 items in `datasets/cep_v2/audit_sample.md` (items must be final
    before Layer 0, because changing them later invalidates it).
-2. Layer 0 on Kaggle: agents A and B, 300 items × K = 20 each (12,000 answers), one agent per T4;
-   starts with a 20-item determinism re-check (prefix caching off).
+3. Layer 0 on Kaggle: agents A and B, 300 `cep_v2` items × K = 20 each (12,000 answers); starts with a
+   20-item determinism re-check (prefix caching off).
 3. Checker validation: hand-label 150 answers from Layer 0 (target ≥ 95% on right/wrong, ≥ 85% on
    error class).
 4. Null-model code (`nulls.py`) + Experiment 1.

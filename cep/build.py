@@ -7,21 +7,31 @@ import random
 from pathlib import Path
 
 from cep import checker, normalize, parse
-from cep.generators import crt, false_ontology
-from cep.sources import gsm_plus, prontoqa
+from cep.generators import crt, false_ontology, math_word
 
-VERSION = "cep_v1"
-SEED = 0
+# cep_v1 (frozen, superseded): drew 150 items from public datasets (ProntoQA 2022, GSM-Plus 2024).
+# cep_v2: every item generated fresh, so no model's training data can contain it.
+VERSIONS = {"cep_v1": 0, "cep_v2": 1}       # version -> seed
 
 
-def build(out_dir: Path, seed: int = SEED) -> dict:
-    groups = [
-        crt.generate(per_template=10, seed=seed),                    # 100 lure items
-        prontoqa.load(n=50, seed=seed),                              # 50 fictional logic
-        false_ontology.generate(n=50),                               # 50 false-world logic
-        gsm_plus.load(n_missing=50, n_distractor=50, seed=seed),     # 100 math
+def make_items(version: str, seed: int) -> list:
+    if version == "cep_v1":
+        from cep.sources import gsm_plus, prontoqa
+        return [*crt.generate(per_template=10, seed=seed), *prontoqa.load(n=50, seed=seed),
+                *false_ontology.generate(n=50), *gsm_plus.load(n_missing=50, n_distractor=50, seed=seed)]
+    from cep.sources import rg_syllogism
+    return [
+        *crt.generate(per_template=10, seed=seed),                                       # 100 trick questions
+        *false_ontology.generate(n=50),                                                  # 50 false-world logic
+        *rg_syllogism.generate(n_valid=25, n_invalid=25, seed=seed),                     # 50 syllogisms
+        *math_word.generate(per_template_complete=5, per_template_missing=5, seed=seed), # 100 math
     ]
-    items = [it for g in groups for it in g]
+
+
+def build(out_dir: Path, version: str) -> dict:
+    seed = VERSIONS[version]
+    VERSION = version
+    items = make_items(version, seed)
     counters = collections.Counter()
     for it in items:
         counters[it.family] += 1
@@ -40,7 +50,7 @@ def build(out_dir: Path, seed: int = SEED) -> dict:
         items_sha256=hashlib.sha256(body).hexdigest(),
         normalizer_version=normalize.NORMALIZER_VERSION, parser_version=parse.PARSER_VERSION,
         checker_version=checker.CHECKER_VERSION,
-        sources={gsm_plus.DATASET: gsm_plus.REVISION, prontoqa.DATASET: prontoqa.REVISION},
+        sources=_sources(version),
         by_family=dict(collections.Counter(it.family for it in items)),
         by_template=dict(collections.Counter(it.template_id for it in items)),
         by_cause=dict(collections.Counter(it.error_cause_by_construction for it in items)),
@@ -51,10 +61,18 @@ def build(out_dir: Path, seed: int = SEED) -> dict:
     return manifest
 
 
+def _sources(version: str) -> dict:
+    if version == "cep_v1":
+        from cep.sources import gsm_plus, prontoqa
+        return {gsm_plus.DATASET: gsm_plus.REVISION, prontoqa.DATASET: prontoqa.REVISION}
+    from cep.sources import rg_syllogism
+    return {"reasoning-gym (pip)": rg_syllogism.PACKAGE_VERSION, "generators": "cep/generators/*.py (this commit)"}
+
+
 def _write_audit(items, path: Path, seed: int):
     """30 items (10 per family) for a human to check the answer key and lure by hand."""
     r = random.Random(seed)
-    out = ["# cep_v1 hand audit (30 items)\n",
+    out = [f"# {items[0].item_id.rsplit('-', 2)[0]} hand audit (30 items)\n",
            "For each item tick: answer key correct? lure sensible? question unambiguous? "
            "Note any problem under the item.\n"]
     for fam in ("lure", "logic", "math"):
@@ -69,6 +87,8 @@ def _write_audit(items, path: Path, seed: int):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=f"datasets/{VERSION}")
-    m = build(Path(ap.parse_args().out))
+    ap.add_argument("--version", default="cep_v2", choices=sorted(VERSIONS))
+    ap.add_argument("--out", default=None)
+    a = ap.parse_args()
+    m = build(Path(a.out or f"datasets/{a.version}"), a.version)
     print(json.dumps(m, indent=2))
