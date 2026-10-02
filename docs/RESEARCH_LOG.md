@@ -38,7 +38,7 @@ evaluation, and does who-speaks-first matter.
 | 3 | Layer 0: each agent answers all 600 items × 20 alone (Kaggle) | ✅ 2026-10-02 (24,000 answers, 3.4 GPU-h) |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
 | 5 | Null-model code validated on simulated data; **Experiment 1 PASS** on real data | ✅ 2026-10-02 |
-| 6 | Experiment 7: A→B, B→A, random-answer control | ⏳ |
+| 6 | Experiment 7: A→B (steps / answer only), B→A, random-answer control | ✅ 2026-10-02 — **all 5 pre-registered hypotheses supported** |
 | 7 | Analysis + write-up | ⏳ |
 | 8 | Publish dataset on Hugging Face as `copy-or-coincidence` (CC-BY-4.0, public, canary GUID `92afb6b4-…`) | ⏳ **at the end**, after final tweaks; prepared by `release/make_hf_release.py` |
 
@@ -121,14 +121,56 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Underpowered | 600 items; simulate power from real Layer-0 distributions before fixing R for Exp 7 | ⏳ |
 | Result specific to one model | Replicate on a second family (Gemma-4-E4B) and report sign + magnitude | ⏳ |
 | Result specific to one task style | 20 trick templates, 25 false-world cases, syllogisms, 10 math templates; template as random effect | ✅ |
-| Analysis chosen after seeing data | Pre-register ≤ 5 primary hypotheses per experiment as a git-timestamped file before running it; Holm correction; everything else labelled exploratory | ⏳ |
+| Analysis chosen after seeing data | Pre-register ≤ 5 primary hypotheses per experiment as a git-timestamped file before running it; Holm correction; everything else labelled exploratory | ✅ Exp 1 and Exp 7 pre-registered |
 | Statistics overstate precision | Item is the unit: item-bootstrap CIs, within-item permutation tests, mixed models with item + template random effects | ⏳ |
-| Interaction effect is just a longer prompt / formatting copy | Random-answer control (Condition C), redacted control (E) | ⏳ |
+| Interaction effect is just a longer prompt / formatting copy | Random-answer control (Condition C) ✅; redacted control (E) ⏳ | 🔄 |
 | Reproducibility | Public repo, pinned model/dataset/package versions, byte-identical item rebuilds, append-only logs with seeds, released raw outputs | ✅ |
 | Non-determinism | Final answers identical on rerun (E0); residual text drift documented; prefix caching off | ✅ |
 | Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
+
+### 2026-10-02: Experiment 7, sequential exposure — **H1–H5 all supported** (pre-registered in `prereg/exp7_sequential_exposure.md`)
+OLMo-3-7B, 600 `cep_v2` items × R = 5 per condition (12,000 receiver answers, 2.1 GPU-h). Receiver sees a
+sender's Layer 0 sample 10–14 (or a uniformly random candidate answer); nulls from Layer 0 samples 0–9.
+Residual = observed − item-conditioned expectation; 95% item-bootstrap CI; one-sided within-item permutation
+p (2,000 shuffles, so p = 0.0005 is the floor); Holm across the five.
+
+| Hypothesis | Residual | 95% CI | p (Holm) | Verdict |
+|---|---|---|---|---|
+| H1 `seq_steps` same answer | **+0.0874** | [+0.0739, +0.1016] | 0.0025 | supported |
+| H2 steps − answer-only, same answer | **+0.0200** | [+0.0130, +0.0277] | 0.0025 | supported |
+| H3 `random_answer` same answer | **+0.1784** | [+0.1584, +0.1989] | 0.0025 | supported |
+| H4 `seq_steps` joint error | **+0.0398** | [+0.0308, +0.0493] | 0.0025 | supported |
+| H5 `seq_steps` both on lure (lure items) | **+0.0202** | [+0.0102, +0.0314] | 0.0025 | supported |
+
+**Decomposition (the project's headline quantity).** With steps shown, observed joint error 0.121 = 0.081
+predicted by the agents' own per-item behaviour + **0.040 created by interaction (33%)**. Answer only: 0.110 =
+0.081 + 0.028 (26%). Random answer: 0.217 = 0.076 + 0.141 (65%).
+
+Condition summaries:
+
+| Condition | Receiver accuracy | Gives shown answer | Same-answer residual | Joint-error residual | Lure residual |
+|---|---|---|---|---|---|
+| Layer 0 (alone) | 0.873 | — | — | — | — |
+| `seq_steps` (B sees A, steps) | 0.874 | 0.984 | +0.087 | +0.040 | +0.020 |
+| `seq_answer` (B sees A, answer) | 0.879 | 0.964 | +0.067 | +0.029 | +0.012 |
+| `random_answer` (C) | **0.767** | 0.764 | +0.178 | +0.141 | +0.129 |
+| `seq_steps_rev` (A sees B, steps) | 0.874 | 0.981 | +0.084 | +0.040 | +0.014 |
+
+Exploratory (not pre-registered):
+- **Adoption of wrong answers** vs the receiver's own rate for that same answer (Layer 0 samples 0–9):
+  steps 96.2% vs 55.6%; answer only 84.9% vs 55.6%; **random 47.5% vs 11.3% (≈4×)**; reversed 93.3% vs 55.1%.
+- Accuracy is unchanged under real-peer exposure (0.874 vs 0.873): the receiver converges on the sender, who is
+  as accurate as itself, so agreement rises without correction (consistent with the martingale account of
+  debate, Choi et al. 2025). A content-free peer answer lowers accuracy by 10.6 points.
+- Order: `seq_steps_rev` reproduces `seq_steps` (same-answer +0.084 vs +0.087), as expected for two agents with
+  identical weights; not a test of cascades.
+- By family (same-answer residual, steps): trick +0.108, logic +0.086, math +0.068.
+
+**Limitations to carry into the paper:** one model playing both roles (replicate on Gemma-4-E4B); one message
+framing ("Another agent solved this problem independently."); no redacted-reasoning (E) or flipped-conclusion
+(F) controls yet, so "follows the conclusion vs the argument" is not yet separated.
 
 ### 2026-10-02: Experiment 1, independent duplicates — **PASS** (pre-registered in `prereg/exp1_independent_duplicates.md`)
 OLMo-3-7B agents A and B (same weights, different seeds, no interaction), 600 `cep_v2` items; samples
@@ -288,6 +330,16 @@ Entries follow the guide's template (§15): fields above the line are written **
   wrong answer" counts, so they must be fixed before Layer 0.
 
 ## 8. Next steps
+
+*(2026-10-02, after Experiment 7)*
+1. **Shibaditya:** label the 150 replies in `validation/checker_label_sheet.md` (checker validation).
+2. Replicate Experiment 7 on a second model family (Gemma-4-E4B; first get it running on T4 via vLLM
+   engine-argument FlexAttention, or a transformers backend).
+3. Mechanism controls (guide §8): E redacted reasoning, F flipped conclusion, G displayed confidence.
+4. Robustness: a second message framing; original vs alternative syllogism scoring.
+5. Search OLMo's public training data (Dolma 3) for item text; HF release at the very end.
+
+*(earlier)*
 1. **Shibaditya:** hand-audit the 30 items in `datasets/cep_v2/audit_sample.md` (items must be final
    before Layer 0, because changing them later invalidates it).
 2. Layer 0 on Kaggle with OLMo-3-7B: agents A and B, 600 `cep_v2` items × K = 20 each (24,000 answers,
