@@ -64,3 +64,14 @@ def test_syllogism_keys_hold_without_existential_import():
     for it in rg_syllogism.generate(25, 25, seed=1):
         if it.correct == TRUE:
             assert not it.meta["conclusion"].startswith("Some")
+
+
+def test_every_cep_v2_key_confirmed_by_independent_solver(tmp_path):
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "analysis"))
+    import verify_keys
+    from cep.build import build
+    build(tmp_path, "cep_v2")
+    assert verify_keys.main(str(tmp_path / "items.jsonl")) == 0

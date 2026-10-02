@@ -86,3 +86,10 @@ def test_false_ontology_v2():
     assert len(items) == 100 and len({i.question for i in items}) == 100
     v1 = false_ontology.generate(50)
     assert all("goldfish" not in i.question for i in v1)           # cep_v1 unchanged by the extra cases
+    for it in items:
+        text = it.question.split("\n\n")[0]
+        assert " is not " not in text                                # no scope-ambiguous negation
+        asked = it.question.rsplit(" is ", 1)[1].rstrip(".")
+        facts = [f for f in text.split(". ") if not f.startswith(("Every " + it.meta["entity"], "No "))]
+        distractor = facts[0]                                        # the unrelated fact comes second
+        assert asked not in distractor or it.meta["entity"] in distractor, (asked, distractor)

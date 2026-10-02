@@ -44,6 +44,9 @@ def _a(noun: str) -> str:
 
 
 def generate(n: int, extra: bool = False) -> list[Item]:
+    """extra=False reproduces cep_v1 exactly. extra=True (cep_v2) adds 12 cases and two audit fixes:
+    negated rules read "No X is P" ("Every X is not P" can also mean "not every X is P"), and the
+    distractor fact never mentions either property the question is about."""
     cases = CASES + (CASES_V2_EXTRA if extra else [])
     items = []
     k = 0
@@ -52,12 +55,17 @@ def generate(n: int, extra: bool = False) -> list[Item]:
             for ci, (ent, cat, broad, fake_prop, real_prop) in enumerate(cases):
                 name = NAMES[k % len(NAMES)]
                 other = cases[(ci + 5) % len(cases)]          # an unrelated true fact as a distractor
+                if extra:
+                    j = ci + 5
+                    while cases[j % len(cases)][4] in (fake_prop, real_prop) or j % len(cases) == ci:
+                        j += 1
+                    other = cases[j % len(cases)]
                 carrier = cat if depth == 1 else broad
                 rules = [f"Every {ent} is {_a(cat)}."]
                 if depth == 2:
                     rules.append(f"Every {cat} is {_a(broad)}.")
                 if negated:
-                    rules.append(f"Every {carrier} is not {real_prop}.")
+                    rules.append(f"No {carrier} is {real_prop}." if extra else f"Every {carrier} is not {real_prop}.")
                     statement, correct, lure = f"{name} is {real_prop}.", FALSE, TRUE
                 else:
                     rules.append(f"Every {carrier} is {fake_prop}.")

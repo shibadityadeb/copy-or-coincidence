@@ -38,6 +38,8 @@ def _fuel(r):
 def _savings(r):
     a, p, w = r.choice([200, 250, 300, 400, 500]), r.choice([10, 20, 25, 40]), r.randint(4, 12)
     s = r.randrange(50, 400, 10)
+    if (a * p) % 100:            # weekly saving must be whole dollars (250 x 25% = 62.50 was floored before)
+        return None
     return dict(a=a, p=p, w=w, s=s) if a * p // 100 * w > s else None
 
 

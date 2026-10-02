@@ -111,7 +111,7 @@ No cats are teachers?
 ## cep_v2-logic-098  ·  false_ontology  ·  false_ontology_gen:salmon:2:1
 
 ```text
-Every salmon is a bird. Every bat is furry. Every bird is an animal. Every animal is not finned. Stella is a salmon.
+Every salmon is a bird. Every bat is furry. Every bird is an animal. No animal is finned. Stella is a salmon.
 
 Assume every statement above is true, even if it seems false in the real world.
 Is the following statement true or false? Stella is finned.
@@ -135,7 +135,7 @@ Is the following statement true or false? Polly is six-legged.
 ## cep_v2-logic-025  ·  false_ontology  ·  false_ontology_gen:camel:1:0
 
 ```text
-Every camel is a fish. Every dolphin is air-breathing. Every fish is gilled. Max is a camel.
+Every camel is a fish. Every shark is cold-blooded. Every fish is gilled. Max is a camel.
 
 Assume every statement above is true, even if it seems false in the real world.
 Is the following statement true or false? Max is gilled.
@@ -174,7 +174,7 @@ Is the following statement true or false? Sally is cold-blooded.
 ## cep_v2-logic-100  ·  false_ontology  ·  false_ontology_gen:camel:2:1
 
 ```text
-Every camel is a fish. Every dolphin is air-breathing. Every fish is an animal. Every animal is not air-breathing. Rex is a camel.
+Every camel is a fish. Every shark is cold-blooded. Every fish is an animal. No animal is air-breathing. Rex is a camel.
 
 Assume every statement above is true, even if it seems false in the real world.
 Is the following statement true or false? Rex is air-breathing.
@@ -285,7 +285,7 @@ Ana works 31 regular hours a week at $19 per hour. She also works 2 hours of ove
 ## cep_v2-math-059  ·  math_savings  ·  math_gen:savings:m9
 
 ```text
-Maya earns $300 per week and saves 25% of it. After 12 weeks she spends some of her savings on a bike. How many dollars of savings does she have left?
+Maya earns $400 per week and saves 20% of it. After some weeks she spends $90 of her savings on a bike. How many dollars of savings does she have left?
 ```
 - correct: **UNANSWERABLE**  ·  lure: **None**  ·  cause: missing_premise
 - [ ] key correct  - [ ] lure sensible  - [ ] unambiguous

@@ -34,7 +34,7 @@ evaluation, and does who-speaks-first matter.
 | 1 | Item set `cep_v1` + programmatic checker + tests | ✅ 2026-10-01 |
 | 2 | Model runner (Mac + Kaggle), Experiment 0 sanity | ✅ 2026-10-01 (one open item: GPU wording drift, see Findings) |
 | 2b | Contamination-proof setup: OLMo-3-7B main model + generated-only `cep_v2` (600 items) | ✅ 2026-10-02 |
-| 2a | Hand-audit 30 items (`datasets/cep_v2/audit_sample.md`) | ⏳ waiting on Shibaditya |
+| 2a | Item audit: independent solver on all 600 keys ✅; LLM wording review of 30 ✅ (2 design flaws fixed); human spot-check ⏳ (non-blocking, see exclusion rule) | ✅ 2026-10-02 |
 | 3 | Layer 0: each agent answers all 600 items × 20 alone (Kaggle) | ⏳ after audit |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
 | 5 | Null-model code + Experiment 1 (independent agents must give residual ≈ 0) | ⏳ |
@@ -113,7 +113,7 @@ What a conference reviewer will test, and how this project answers it. Each row 
 |---|---|---|
 | Wrong baseline (difficulty confound) | Item-conditioned null; **Experiment 1 must give residual ≈ 0** for non-interacting agents | ⏳ |
 | Training-data contamination | All 600 items generated fresh (`cep_v2`); main model's training data (Dolma 3) is public → search it for item text | ✅ items / ⏳ search |
-| Answer keys wrong or ambiguous | Generator tests (independent recomputation, necessity test for missing premises, existential-import filter) + 30-item human audit | ✅ tests / ⏳ audit |
+| Answer keys wrong or ambiguous | Independent second solver re-derives all 600 keys (`analysis/verify_keys.py`, run in the test suite) + LLM wording review + human spot-check with a pre-stated exclusion rule | ✅ solver + review / ⏳ human |
 | Grading wrong | Code-only grading; validate on 150 human-labelled answers (≥95% correct/incorrect, ≥85% error class); checker frozen and hashed | ⏳ |
 | Underpowered | 600 items; simulate power from real Layer-0 distributions before fixing R for Exp 7 | ⏳ |
 | Result specific to one model | Replicate on a second family (Gemma-4-E4B) and report sign + magnitude | ⏳ |
@@ -126,6 +126,28 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
+
+### 2026-10-02: Item audit of `cep_v2` (before any model sees it)
+**How (report this in the paper's Methods):**
+1. *Independent solver, all 600 items* (`analysis/verify_keys.py`), written separately from the generators:
+   syllogisms by enumerating all 256 set-models over three terms, under both modern and Aristotelian
+   (existential-import) semantics, so a convention-dependent key is caught; false-world items by forward
+   chaining over the stated rules; trick questions by simulation from stored parameters (count
+   handshakes, step the snail, etc.); math by separately written formulas.
+2. *LLM wording review* (Claude) of the 30-item audit sample, for ambiguity the solver cannot see.
+3. *Human spot-check* by Shibaditya (pending). **Pre-stated exclusion rule:** any item a human finds
+   wrong or ambiguous after Layer 0 is excluded from all analyses (not re-run), and the exclusion is reported.
+
+**Found and fixed:**
+- Solver: 1 of 600 disagreed. `savings` floored a non-whole weekly saving ($250 × 25% = $62.50 → $62).
+  Here it only touched a missing-premise item (key still correct), but a complete item with those
+  numbers would have had a wrong key. Generator now rejects non-whole savings; solver added to tests.
+- Review: negated false-world rules read "Every animal is not finned", which can also mean "not every
+  animal is finned" (scope ambiguity) → now "No animal is finned." (50 items).
+- Review: the distractor fact sometimes named the queried property ("Every dolphin is air-breathing" in a
+  question about air-breathing), cueing the lure in some items only → distractor now always about a
+  different property.
+- Result: **600/600 keys confirmed** after fixes. 28/30 sampled items had no wording issue.
 
 ### 2026-10-02: Experiment 0 for OLMo-3-7B-Instruct (20 `cep_v1` items × 3, vLLM fp16, 2× T4)
 - Accuracy 82%; **9 of 60 answers hit the lure** (siblings 5/6, overtaking 4/6), vs 1/60 for Qwen3.5-4B.
