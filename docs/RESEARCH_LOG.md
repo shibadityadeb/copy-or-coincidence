@@ -33,7 +33,7 @@ evaluation, and does who-speaks-first matter.
 | 0 | Read guide, plain-language explainer | ✅ 2026-09-30 |
 | 1 | Item set `cep_v1` + programmatic checker + tests | ✅ 2026-10-01 |
 | 2 | Model runner (Mac + Kaggle), Experiment 0 sanity | ✅ 2026-10-01 (one open item: GPU wording drift, see Findings) |
-| 2b | Switch to contamination-proof setup: Gemma-4-E4B + generated-only item set `cep_v2` | 🔄 items built ✅; Gemma float16 test running |
+| 2b | Switch to contamination-proof setup: Gemma-4-E4B + generated-only item set `cep_v2` | 🔄 items built ✅; Gemma failed on T4 (shared memory), retry + OLMo fallback running |
 | 2a | Hand-audit 30 items (`datasets/cep_v2/audit_sample.md`) | ⏳ waiting on Shibaditya |
 | 3 | Layer 0: each agent answers all 300 items × 20 alone (Kaggle) | ⏳ |
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
@@ -146,6 +146,7 @@ candidate model's training cutoff.
 
 | Date | Problem | Fix |
 |---|---|---|
+| 2026-10-02 | Gemma-4-E4B would not start on T4 (`exp0_gemma` v1): vLLM's Triton attention kernel needs 96 KB of on-chip shared memory for Gemma-4's large attention heads; the T4 has 64 KB. Not a float16 problem | Retrying with vLLM's FlexAttention backend; OLMo-3-7B tested in the same Kaggle job as the fallback. Jobs can now run several experiments, each in its own process |
 | 2026-10-02 | Reasoning Gym math generator: wrong answer keys and unused numbers | Wrote `math_word.py`: 10 templates, every quantity used, exact integer answers; a test perturbs each hidden quantity and checks the answer changes |
 | 2026-10-02 | Reasoning Gym syllogisms: 71% "Yes" and some keys depend on existential import | Balanced 25/25; dropped "Yes" + "Some…" conclusions; test enforces it |
 | 2026-10-01 | A crash mid-write would glue the next row onto a half-written line, losing it | `repair_tail()` trims a torn last line before resuming; covered by a test |
