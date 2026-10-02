@@ -24,7 +24,7 @@ def human_answers(sheet: Path) -> dict[int, str]:
         for line in extra.read_text().splitlines():
             if m := re.match(r"\s*(\d+)\s*[:.)-]\s*(.+)", line):
                 out[int(m.group(1))] = m.group(2).strip()
-    for n, ans in re.findall(r"^## (\d+)\n.*?^answer:[ \t]*(.*)$", sheet.read_text(), re.S | re.M):
+    for n, ans in re.findall(r"^## (\d+)\n.*?^answer:[ \t]*([^\n]*)$", sheet.read_text(), re.S | re.M):
         if ans.strip():
             out.setdefault(int(n), ans.strip())
     return out
