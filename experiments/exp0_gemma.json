@@ -1,6 +1,6 @@
 {
   "experiment_id": "exp0_gemma",
-  "description": "Feasibility of Gemma-4-E4B on 2x T4 with FlexAttention (default Triton attention needs 96 KB shared memory, T4 has 64 KB). Same 20-item cep_v1 slice, K=3, run twice.",
+  "description": "Feasibility of Gemma-4-E4B on 2x T4 with attention_backend=FLEX_ATTENTION passed as an engine argument (the env var was ignored by vLLM 0.30). Same 20-item cep_v1 slice, K=3, run twice.",
   "items": "datasets/cep_v1/items.jsonl",
   "n_items": 20,
   "k": 3,

@@ -12,15 +12,13 @@
     "limit_mm_per_prompt": {
       "image": 0,
       "audio": 0
-    }
+    },
+    "attention_backend": "FLEX_ATTENTION"
   },
   "prompt": "solver_v1",
   "temperature": 0.7,
   "top_p": 0.95,
   "max_tokens": 1024,
   "enable_thinking": false,
-  "structured_output": true,
-  "env": {
-    "VLLM_ATTENTION_BACKEND": "FLEX_ATTENTION"
-  }
+  "structured_output": true
 }
