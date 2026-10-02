@@ -36,6 +36,13 @@ string → `cep/checker.py` labels it `correct / lure / unanswerable_answered / 
 other_wrong / format_error`. No LLM judge is used. `CHECKER_VERSION` is a hash of those three files
 and goes on every result row.
 
+## How changes land
+
+Every change goes on its own branch and reaches `main` through a pull request. CI
+(`.github/workflows/ci.yml`) must be green first. It runs the test suite, re-derives all 600 `cep_v2`
+answer keys with the independent solver, and rebuilds `cep_v1` and `cep_v2` from scratch, failing if
+either differs by a single byte from the committed files.
+
 ## Kaggle
 
 GPU runs are pushed as private Kaggle script notebooks (`kaggle/<name>/kernel-metadata.json`,
