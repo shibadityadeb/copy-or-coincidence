@@ -3,8 +3,8 @@ from cep.normalize import FALSE, TRUE, UNANSWERABLE
 from cep.schema import Item
 
 
-def item(correct, lure, answer_type="number"):
-    return Item(item_id="t", family="math", source="t", template_id="t", question="q",
+def item(correct, lure, answer_type="number", template_id="t"):
+    return Item(item_id="t", family="math", source="t", template_id=template_id, question="q",
                 answer_type=answer_type, correct=correct, lure=lure, error_cause_by_construction="t")
 
 
@@ -34,3 +34,12 @@ def test_bool_item():
 def test_check_raw_row_fields():
     row = check_raw(item("7", None), '{"steps": ["a"], "final": "7", "confidence": 0.6}')
     assert row["correct"] and row["parse_ok"] and row["n_steps"] == 1 and len(row["checker_version"]) == 12
+
+
+def test_unanswerable_means_no_only_for_does_it_follow_questions():
+    syl_no, syl_yes = item(FALSE, None, "bool", "rg_syllogism"), item(TRUE, None, "bool", "rg_syllogism")
+    assert check_final(syl_no, "unanswerable").correct
+    assert check_final(syl_no, "unanswerable").answer_norm == FALSE
+    assert not check_final(syl_yes, "unanswerable").correct
+    world = item(TRUE, FALSE, "bool", "false_ontology")
+    assert check_final(world, "unanswerable").error_class == "false_unanswerable"

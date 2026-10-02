@@ -5,7 +5,7 @@
   "items_sha256": "5a825d4f303ebccf8f0a11cdc39ce71ff7ca5bef478f1d29476a20e2c02c8656",
   "normalizer_version": "1",
   "parser_version": "1",
-  "checker_version": "f7805da13b9b",
+  "checker_version": "7cc7f0d7ae9a",
   "sources": {
     "qintongli/GSM-Plus": "3b708db57b96a16e8e3368ed2956990c0809440e",
     "renma/ProntoQA": "6f3e03863ce763efd1f9cd11aacf4caff1b7af02"

@@ -87,6 +87,7 @@ candidate model's training cutoff.
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
+| 2026-10-02 | Syllogisms: "unanswerable" scored as "No" (post-hoc, after Layer 0) | "Cannot be determined from the premises" means "does not follow"; the model used it that way 1,042 times; otherwise two agents saying "unanswerable" would fake a shared error | Keep strict scoring and analyse syllogisms separately; change the prompt and rerun Layer 0 (3.5 GPU-h) |
 | 2026-10-02 | Release `cep_v2` on Hugging Face as `copy-or-coincidence`, CC-BY-4.0, public, with a canary string on every row; **upload deferred to the end of the project** (Shibaditya) | Citable, reproducible; canary lets model trainers exclude it. Deferring lets late tweaks go into the released version | Upload now; gated access; CC-BY-NC |
 | 2026-10-02 | **OLMo-3-7B is the main model; Gemma-4-E4B the second family** (agreed with Shibaditya) | OLMo runs reliably on T4, has public training data (strongest no-contamination evidence), and makes lure errors (9/60 in E0) — shared wrong answers are what we study | Gemma main (blocked on T4 attention kernel); Qwen3.5 (no stated cutoff, 98% accurate → few errors) |
 | 2026-10-02 | **Grow `cep_v2` to 600 items, 20 trick templates** | Guide's power table: 300 items × 5 runs detects a 10-point residual reliably but a 5-point one only ~80%; 400+ items for 90%. More templates guard against "the result is about 10 riddles" and support a template random effect | Keep 300 (underpowered for small effects) |
@@ -129,6 +130,22 @@ What a conference reviewer will test, and how this project answers it. Each row 
 
 ## 5. Findings
 
+### 2026-10-02: Syllogism scoring decision and re-grade (checker `f7805da13b9b` → `7cc7f0d7ae9a`)
+- **Decision (Shibaditya, after seeing Layer 0, therefore reported as a post-hoc scoring change):** on
+  "Does it logically follow?" items (`rg_syllogism`), the answer "unanswerable" is scored as **No**.
+  Rationale: a conclusion that cannot be determined from the premises does not follow; the model's own
+  reasoning on these replies says "does not follow". Not applied to false-world true/false items, where all
+  needed facts are stated and "unanswerable" is a real error.
+- **How:** `analysis/regrade.py` re-grades the stored raw replies; the original Layer 0 files are unchanged;
+  re-graded copies (`*.regraded-7cc7f0d7ae9a.jsonl`) keep the old grading as `prev_*` columns.
+- **Effect:** exactly 1,042 of 24,000 answers changed, all on invalid syllogisms, all from wrong to correct.
+  Syllogism accuracy 66.5% → 92.6%; overall 87.3% → 91.6%.
+- **Experiment 1 under both scorings:** PASS under both. Overall joint-error residual +0.0003
+  [−0.0041, +0.0045] (original) vs +0.0006 [−0.0032, +0.0046] (re-graded); same-answer −0.0051 vs −0.0048.
+  The single p < 0.05 seen before (logic joint error, p = 0.028) becomes p = 0.65, suggesting the
+  "unanswerable" replies were adding noise there. Naive global excess: +6.5 vs +3.7 points.
+- **From now on all analyses use the re-graded scoring**; papers report the original scoring as a robustness check.
+
 ### 2026-10-02: Experiment 1, independent duplicates — **PASS** (pre-registered in `prereg/exp1_independent_duplicates.md`)
 OLMo-3-7B agents A and B (same weights, different seeds, no interaction), 600 `cep_v2` items; samples
 0–9 estimate each agent's per-item distribution, samples 10–19 form 10 observed A/B pairs per item.
@@ -154,7 +171,7 @@ OLMo-3-7B agents A and B (same weights, different seeds, no interaction), 600 `c
 - Accuracy: false-world 99.3%; math complete 99.4%; trick questions 88.4% (lure 7.7% of answers);
   missing-premise 81.8% (answered with a number 17%); syllogisms 66.5% (see below).
 - 53% of items always right, 1.7% always wrong, **45% mixed**: enough within-item variability for the null.
-- **Syllogism scoring issue (open, decision pending):** on invalid syllogisms (key No) the model answered
+- **Syllogism scoring issue (resolved, see next entry):** on invalid syllogisms (key No) the model answered
   "unanswerable" 1,042/2,000 times, usually after correctly reasoning "the conclusion does not follow".
   The solver prompt's rule ("if the question cannot be answered … give unanswerable") collides with
   "Does it logically follow?". Read as "does not follow", syllogism accuracy is 92.6% instead of 66.5%.

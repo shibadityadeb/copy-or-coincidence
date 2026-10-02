@@ -5,7 +5,7 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel
 
-from cep.normalize import UNANSWERABLE, normalize
+from cep.normalize import FALSE, UNANSWERABLE, normalize
 from cep.parse import parse_output
 from cep.schema import Item
 
@@ -25,8 +25,17 @@ class Check(BaseModel):
     error_class: ErrorClass
 
 
+# "Does it logically follow?": a conclusion that cannot be determined from the premises does not follow,
+# so "unanswerable" means "No". Decided 2026-10-02 after Layer 0 showed the model using it that way
+# (1,042 of 2,000 replies on invalid syllogisms); see docs/RESEARCH_LOG.md. Not applied to other bool items,
+# where every needed fact is stated and "unanswerable" is a real error.
+FOLLOWS_TEMPLATES = {"rg_syllogism"}
+
+
 def check_final(item: Item, final) -> Check:
     ans = normalize(final, item.answer_type)
+    if ans == UNANSWERABLE and item.template_id in FOLLOWS_TEMPLATES:
+        ans = FALSE
     if ans is None:
         return Check(answer_norm=None, correct=False, lure_hit=False, error_class="format_error")
     if ans == item.correct:
