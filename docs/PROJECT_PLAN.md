@@ -22,7 +22,10 @@ Every experiment exists to answer a "why" question, and every claim needs conver
 shared blind spots), and **20–42% is created by interaction** (OLMo 31%, Qwen 20%, Nemotron 42%). The interaction
 part is **transmission, not revealed shared priors**: receivers take the specific answer shown, not the agents'
 shared favourite (N4 rejected), and behave as if they put a fixed **deference weight** α on the peer
-(≈ 0.86–0.91 with reasoning shown for OLMo/Nemotron, 0.53 for Qwen; lower for bare or random answers). Copying looks mostly like *tipping* (the peer decides
+(≈ 0.86–0.91 with reasoning shown for OLMo/Nemotron, 0.53 for Qwen; lower for bare or random answers).
+Deference is partly rational for bare answers (correctness, plausibility, own certainty matter), but **a peer's
+reasoning switches the checking off**: right and wrong peers are followed almost equally (Nemotron: wrong answer
+alone α 0.24, same wrong answer with reasoning α 0.88). *Reasoning persuades rather than informs.* Copying looks mostly like *tipping* (the peer decides
 between answers the agent already half-believes), plus *persuasion* by shown reasoning, and it is silent.
 
 **The four depths of "why"** (the paper's spine):
@@ -146,7 +149,8 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 - ⬜ One intervention that moves the residual (answer-first, forced dissent "ally", missing-info warning)
 
 ### F. The "why" depths
-- 🔄 Depth 2 theory: deference-weight model beats N3, mixture, N4 and pure copy everywhere; α per model × condition ✅. Still to do: rational-evaluator model (does α differ for right vs wrong shown answers?) and plausibility-dependent α
+- ✅ Depth 2 theory: deference-weight model beats N3, mixture, N4 and pure copy everywhere; α per model × condition;
+  rationality test: α by right/wrong peer, own certainty, plausibility — reasoning removes discrimination
 - ⬜ Depth 3 origin: same Exp 7 on OLMo-3 base, SFT, DPO, final checkpoints
 - ⬜ Depth 4 mechanism: logit lens, attention to peer answer vs steps, "deference direction" + ablation
 - ⬜ Optional: thinking on vs off (OLMo-3-7B-Think vs Instruct)
@@ -168,7 +172,7 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 
 | Branch | Content | PR |
 |---|---|---|
-| `why/n4-tipping` | N4 test, deference models, error decomposition (plan + results) | to open |
+| `why/rational-deference` | Is deference rational? (plan + results) | to open |
 | `gemma/flex-attention` | Gemma attempts, log of the T4 failure | not opened (log entries only) |
 | `validation/checker-labels` | Label sheet, agreement script, blind-reader result | not opened yet (waiting on human adjudication) |
 | `analysis/why-follow` | (local) exploratory why-follow analysis, uncommitted | — |
