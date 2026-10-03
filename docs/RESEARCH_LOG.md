@@ -135,6 +135,45 @@ What a conference reviewer will test, and how this project answers it. Each row 
 
 ## 5. Findings
 
+### 2026-10-03: Why do agents converge? N4 tipping test, deference models, error decomposition (plan: `prereg/why1_n4_tipping.md`)
+Analysis plan pre-registered on existing Exp 7/7b data before computing (`analysis/n4_tipping.py`; reports
+`outputs/why1_n4_tipping_{exp7b,exp7}.json`). Primary = Experiment 7b; Experiment 7 gives the same picture.
+
+**1. Tipping (N4) vs transmission — transmission wins, decisively.** On *contested* items (product of the two
+agents' solo distributions has no mode above 0.7) where the peer showed something other than the agents'
+shared favourite answer, the receiver gave **the shown answer** 97% (OLMo), 100% (Qwen), 100% (Nemotron) of the
+time and the **joint mode** 3% / 0% / 0% (solo baselines: shown 35–40%, joint mode 44–52%). Prediction
+(P(shown) > P(mode) for OLMo and Nemotron) confirmed. **Caveat:** few informative items (12 / 4 / 8), because
+the agents rarely have a contested shared favourite: most items are dominated by one answer.
+**Correction of an earlier exploratory reading:** the OLMo why-follow analysis suggested "tipping" toward
+answers the agent already finds plausible. The formal N4 test shows the receiver follows *the specific
+answer it was shown*, not the agents' shared favourite. Plausibility still modulates how easily an answer is
+adopted, but convergence is transmission, not revealed shared priors.
+
+**2. Which model of the receiver fits best — a "deference weight".** Of five models (independent N3,
+mixture, mode-finding N4, pure copy, deference weight (1 − α)·p_R + α·[shown]), **deference weight fits best
+(AIC) in every model × condition, under both message versions**. Fitted α (Exp 7b, 95% item-bootstrap CI):
+
+| Receiver | Reasoning shown | Answer only | Random answer |
+|---|---|---|---|
+| OLMo | **0.86** [0.81, 0.90] | 0.66 [0.60, 0.73] | 0.34 [0.30, 0.37] |
+| Qwen | **0.53** [0.45, 0.60] | invalid | invalid |
+| Nemotron | **0.91** [0.87, 0.94] | 0.46 [0.37, 0.54] | 0.18 [0.14, 0.21] |
+
+Reading: with the peer's reasoning shown, OLMo behaves as if 86% of its answer comes from the peer and 14% from
+its own solo judgement. α(steps) > α(answer only) for OLMo and Nemotron (prediction confirmed). Mode-finding
+(N4) is the *worst* model everywhere; pure copying fits well with steps but badly with random answers.
+Exp 7 (peer_v1): OLMo 0.90 / 0.70 / 0.45; Nemotron 0.89 / 0.45 / 0.14; Qwen (steps) 0.41.
+
+**3. Three-way decomposition of errors after exposure (reasoning shown, Exp 7b).**
+| Receiver | Wrong answers | Shared (receiver's own solo mode is wrong) | Interaction-created (solo mode correct, shown wrong) |
+|---|---|---|---|
+| OLMo | 366 | 69% [61, 76] | 28% [21, 35] |
+| Qwen | 145 | 37% [21, 51] | 37% [25, 49] |
+| Nemotron | 278 | 42% [32, 54] | 57% [47, 69] |
+Interaction-created errors per answer: OLMo 3.4% (random answer 12.3%), Qwen 1.8%, Nemotron 5.3% (random 8.7%).
+Lure amplification beyond N4: too few contested lure items (8 / 0 / 1) to interpret.
+
 ### 2026-10-03: Experiment 7b, clarified peer message, three families — **replication criterion met** (pre-registered in `prereg/exp7b_peer_v2.md`)
 Identical to Experiment 7 except the peer message ends with "Give your final answer to the problem above."
 (`prompts/peer_v2.txt`). 36,000 receiver answers; all three runs on the pinned stack (Python 3.12.13,

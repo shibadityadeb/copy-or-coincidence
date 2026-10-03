@@ -19,7 +19,10 @@ Every experiment exists to answer a "why" question, and every claim needs conver
 **Working title:** *Copy or Coincidence? Why Language-Model Agents Converge on the Same Wrong Answers*
 
 **The thesis so far:** across three model families, most shared errors would happen anyway (hard questions,
-shared blind spots), and **20–42% is created by interaction** (OLMo 31%, Qwen 20%, Nemotron 42%). Copying looks mostly like *tipping* (the peer decides
+shared blind spots), and **20–42% is created by interaction** (OLMo 31%, Qwen 20%, Nemotron 42%). The interaction
+part is **transmission, not revealed shared priors**: receivers take the specific answer shown, not the agents'
+shared favourite (N4 rejected), and behave as if they put a fixed **deference weight** α on the peer
+(≈ 0.86–0.91 with reasoning shown for OLMo/Nemotron, 0.53 for Qwen; lower for bare or random answers). Copying looks mostly like *tipping* (the peer decides
 between answers the agent already half-believes), plus *persuasion* by shown reasoning, and it is silent.
 
 **The four depths of "why"** (the paper's spine):
@@ -115,8 +118,9 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 - ✅ Experiment 1 PASS (residual ≈ 0 for non-interacting agents)
 - ✅ Experiment 7: H1–H5 all supported; interaction creates ~1/3 of joint error
 - ✅ Syllogism "unanswerable" scoring decided (stays a distinct, wrong answer)
-- 🔄 Exploratory "why follow" analysis (`analysis/why_follow.py`, not yet committed): tipping, persuasion by
-  steps, fabrication contagion on missing-premise items, silent conformity
+- 🔄 Exploratory "why follow" analysis (`analysis/why_follow.py`, not yet committed): plausibility modulates adoption,
+  persuasion by steps, fabrication contagion on missing-premise items, silent conformity (its "tipping" reading was
+  corrected by the formal N4 test)
 
 ### C. Replication across families
 - ✅ Qwen3.5-4B: Layer 0, Exp 1 PASS, Exp 7 (misread protocol), Exp 7b (H1, H4, H5 supported; H2/H3 invalid)
@@ -126,9 +130,9 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 - ✅ Kaggle environment pinned after Kaggle's image change (`kaggle/env.json`)
 
 ### D. Gaps from the field guide: 🔴 critical
-- ⬜ **N4 mode-finding null** on contested items: formal test of "tipping" vs real influence (no GPU)
+- ✅ **N4 mode-finding null**: rejected — receivers follow the shown answer (97–100%), not the joint mode (0–3%); few contested items
 - ⬜ **Helpful vs harmful flips (h vs g)** and content-blind flip: answer-first-then-revise protocol (GPU)
-- ⬜ **Three-way error decomposition**: shared vs interaction-created vs interaction-amplified (beyond N4)
+- ✅ **Three-way error decomposition**: shared 37–69%, interaction-created 28–57% of post-exposure errors; amplification beyond N4 not estimable (too few contested lure items)
 - ⬜ **Mixed-effects model** (condition × family × error type; item + template random effects) + paired McNemar
 - ⬜ **Comparison with prior work**: Kim et al. / Goel et al. (CAPA) metrics on our data; how much survives item-conditioning
 
@@ -142,7 +146,7 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 - ⬜ One intervention that moves the residual (answer-first, forced dissent "ally", missing-info warning)
 
 ### F. The "why" depths
-- ⬜ Depth 2 theory: fit and compare deference models (blind copy / tipping / rational / persuasion); deference weight α
+- 🔄 Depth 2 theory: deference-weight model beats N3, mixture, N4 and pure copy everywhere; α per model × condition ✅. Still to do: rational-evaluator model (does α differ for right vs wrong shown answers?) and plausibility-dependent α
 - ⬜ Depth 3 origin: same Exp 7 on OLMo-3 base, SFT, DPO, final checkpoints
 - ⬜ Depth 4 mechanism: logit lens, attention to peer answer vs steps, "deference direction" + ablation
 - ⬜ Optional: thinking on vs off (OLMo-3-7B-Think vs Instruct)
@@ -164,7 +168,7 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 
 | Branch | Content | PR |
 |---|---|---|
-| `exp7b/peer-v2` | Qwen + Nemotron replication (Layer 0, Exp 1, Exp 7), Exp 7b for all three, comparison script, log + plan updates | to open |
+| `why/n4-tipping` | N4 test, deference models, error decomposition (plan + results) | to open |
 | `gemma/flex-attention` | Gemma attempts, log of the T4 failure | not opened (log entries only) |
 | `validation/checker-labels` | Label sheet, agreement script, blind-reader result | not opened yet (waiting on human adjudication) |
 | `analysis/why-follow` | (local) exploratory why-follow analysis, uncommitted | — |
