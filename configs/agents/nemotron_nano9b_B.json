@@ -1,0 +1,22 @@
+{
+  "agent_id": "nemotron-nano9b-B",
+  "model": "nvidia/NVIDIA-Nemotron-Nano-9B-v2",
+  "revision": "6533e8de2c68e4536bf7c411d7a3ce5734111476",
+  "training_cutoff": "2024-09 (model card, pretraining)",
+  "system_suffix": "/no_think",
+  "vllm": {
+    "dtype": "float16",
+    "tensor_parallel_size": 2,
+    "max_model_len": 4096,
+    "max_num_seqs": 64,
+    "enable_prefix_caching": false,
+    "limit_mm_per_prompt": {},
+    "trust_remote_code": true
+  },
+  "prompt": "solver_v1",
+  "temperature": 0.7,
+  "top_p": 0.95,
+  "max_tokens": 1024,
+  "enable_thinking": false,
+  "structured_output": true
+}

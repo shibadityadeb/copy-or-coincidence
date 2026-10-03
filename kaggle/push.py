@@ -38,13 +38,16 @@ def main():
     job = ROOT / "kaggle" / "jobs" / slug
     job.mkdir(parents=True, exist_ok=True)
     src = (ROOT / "kaggle/layer0/layer0.py").read_text()
+    env = json.loads((ROOT / "kaggle/env.json").read_text())
     src = src.replace("__COMMIT__", commit).replace("__EXPERIMENT__", a.experiment).replace("__RUN_ID__", a.run_id)
+    src = src.replace("__VLLM__", env["vllm"]).replace("__PYTHON__", env["python"])
     (job / "job.py").write_text(src)
     (job / "kernel-metadata.json").write_text(json.dumps({
         "id": f"{USER}/{slug}", "title": slug, "code_file": "job.py", "language": "python",
         "kernel_type": "script", "is_private": True, "enable_gpu": True, "enable_internet": True,
         "machine_shape": "NvidiaTeslaT4", "dataset_sources": [], "competition_sources": [],
-        "kernel_sources": []}, indent=2))
+        "kernel_sources": [], "docker_image": env["docker_image"],
+        "docker_image_pinning_type": env["docker_image_pinning_type"]}, indent=2))
     print(sh(KAGGLE, "kernels", "push", "-p", str(job)))
     if a.no_wait:
         return

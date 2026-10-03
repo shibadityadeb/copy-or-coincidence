@@ -1,0 +1,40 @@
+{
+  "experiment_id": "exp7_nemotron",
+  "description": "Replication of Experiment 7 (prereg/replication_nemotron.md) with Nemotron-Nano-9B-v2; identical conditions.",
+  "items": "datasets/cep_v2/items.jsonl",
+  "R": 5,
+  "peer_prompt": "peer_v1",
+  "layer0": {
+    "A": "outputs/layer0_nemotron/layer0_nemotron-run1__nemotron-nano9b-A.jsonl",
+    "B": "outputs/layer0_nemotron/layer0_nemotron-run1__nemotron-nano9b-B.jsonl"
+  },
+  "conditions": [
+    {
+      "name": "seq_steps",
+      "receiver": "configs/agents/nemotron_nano9b_B.json",
+      "sender": "A",
+      "show": "steps"
+    },
+    {
+      "name": "seq_answer",
+      "receiver": "configs/agents/nemotron_nano9b_B.json",
+      "sender": "A",
+      "show": "answer"
+    },
+    {
+      "name": "random_answer",
+      "receiver": "configs/agents/nemotron_nano9b_B.json",
+      "sender": "random",
+      "show": "answer"
+    },
+    {
+      "name": "seq_steps_rev",
+      "receiver": "configs/agents/nemotron_nano9b_A.json",
+      "sender": "B",
+      "show": "steps"
+    }
+  ],
+  "backend": "vllm",
+  "batch_size": 512,
+  "out_dir": "outputs/exp7_nemotron"
+}
