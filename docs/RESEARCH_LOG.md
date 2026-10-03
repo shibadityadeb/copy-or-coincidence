@@ -135,6 +135,46 @@ What a conference reviewer will test, and how this project answers it. Each row 
 
 ## 5. Findings
 
+### 2026-10-03: Is deference rational? (plan: `prereg/why2_rational_deference.md`; `analysis/why2_rational.py`)
+Deference weight α (from the why1 model) refitted on subsets, on *mixed* items (receiver solo accuracy strictly
+between 0 and 1: 146–171 items per model), 95% item-bootstrap CIs. Experiment 7b primary.
+
+**1. Right vs wrong peer.** Receivers discriminate somewhat (D = α_right − α_wrong > 0 everywhere), **but showing
+the peer's reasoning largely removes the discrimination**:
+
+| Receiver | Condition | α right peer | α wrong peer | Discrimination D |
+|---|---|---|---|---|
+| OLMo | reasoning shown | 0.98 [0.96, 1.00] | **0.88** [0.82, 0.94] | +0.10 [+0.04, +0.18] |
+| OLMo | answer only | 0.84 [0.76, 0.91] | 0.65 [0.57, 0.76] | +0.18 [+0.06, +0.31] |
+| OLMo | random answer | 0.70 [0.59, 0.81] | 0.52 [0.44, 0.59] | +0.19 [+0.04, +0.31] |
+| Qwen | reasoning shown | 0.95 [0.90, 1.00] | 0.66 [0.52, 0.80] | +0.29 [+0.14, +0.44] |
+| Nemotron | reasoning shown | 1.00 [0.98, 1.00] | **0.88** [0.82, 0.93] | +0.11 [+0.06, +0.17] |
+| Nemotron | answer only | 0.91 [0.85, 0.97] | **0.24** [0.15, 0.33] | **+0.68** [+0.55, +0.79] |
+| Nemotron | random answer | 0.88 [0.80, 0.96] | 0.30 [0.24, 0.37] | +0.58 [+0.46, +0.67] |
+
+Prediction (D > 0; α_wrong > 0.5 with reasoning shown for OLMo and Nemotron) confirmed. **Key observation:**
+Nemotron, shown only a wrong answer, mostly rejects it (α 0.24); shown the *same wrong answer with reasoning*, it
+adopts it (α 0.88). The peer's reasoning overrides the receiver's own evaluation. Exp 7 (peer_v1) is starker:
+OLMo with reasoning shown α_right 0.99 vs α_wrong 0.96, D = +0.03 [−0.01, +0.07] (indistinguishable from blind);
+Nemotron answer-only D = +0.73, reasoning shown +0.16; Qwen +0.18.
+
+**2. Receiver certainty** (wrong shown answers, all items). α rises with the receiver's own uncertainty in most
+cells — OLMo reasoning shown: certain 0.76 → some doubt 0.86 → very unsure 0.96; random answer 0.20 → 0.47 → 0.73;
+Qwen 0.44 → 0.50 → 0.88; Nemotron reasoning shown 0.70 → 0.82 → 0.92. Exception: Nemotron answer-only and random
+answer are not monotonic (very unsure lower than some doubt). Prediction mostly confirmed. Notably, even when
+the receiver *always* gives one answer alone (H = 0), a peer's wrong reasoning moves it 70–76% of the way.
+
+**3. Plausibility** (wrong shown answers). Without reasoning, receivers adopt answers they sometimes give
+themselves far more readily than answers they never give (OLMo answer only 0.71 vs 0.49; random 0.58 vs 0.25;
+Nemotron random 0.37 vs 0.13; Qwen reasoning shown 0.79 vs 0.55). **With reasoning shown, plausibility stops
+mattering for OLMo (0.88 vs 0.86) and Nemotron (0.83 vs 0.89)**: the reasoning carries even answers the receiver
+would never give. Prediction confirmed without reasoning, not with it.
+
+**Synthesis for the paper.** Deference is *partly* rational when the peer gives only an answer (receivers
+check it against their own beliefs: correctness, plausibility and their own certainty all matter). A peer's
+**reasoning switches this checking off**: receivers then follow right and wrong peers almost equally, and
+adopt answers they would never produce themselves. Reasoning persuades rather than informs.
+
 ### 2026-10-03: Why do agents converge? N4 tipping test, deference models, error decomposition (plan: `prereg/why1_n4_tipping.md`)
 Analysis plan pre-registered on existing Exp 7/7b data before computing (`analysis/n4_tipping.py`; reports
 `outputs/why1_n4_tipping_{exp7b,exp7}.json`). Primary = Experiment 7b; Experiment 7 gives the same picture.
