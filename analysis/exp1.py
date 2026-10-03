@@ -4,6 +4,7 @@ python analysis/exp1.py outputs/layer0_olmo/layer0_olmo-run1__olmo3-7b-A.jsonl o
 """
 import json
 import sys
+from pathlib import Path
 
 import pandas as pd
 
@@ -54,7 +55,9 @@ def main(path_a, path_b):
         print(f"{scope:8s} naive global excess (contrast only): {n['excess']:+.4f}")
     print("\nNA rate:", report["na_rate_by_family"], "\naccuracy:", report["accuracy_by_family"])
     print("\nEXPERIMENT 1:", "PASS" if passed else "FAIL")
-    json.dump(report, open("outputs/layer0_olmo/exp1_report.json", "w"), indent=2, default=float)
+    out = Path(path_a).parent / "exp1_report.json"          # next to the Layer 0 files it analyses
+    json.dump(report, open(out, "w"), indent=2, default=float)
+    print("report:", out)
     return passed
 
 

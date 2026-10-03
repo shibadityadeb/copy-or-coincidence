@@ -1,6 +1,6 @@
 """Experiment 7 analysis, exactly as pre-registered in prereg/exp7_sequential_exposure.md.
 
-python analysis/exp7.py outputs/exp7_olmo
+python analysis/exp7.py outputs/exp7_olmo [experiments/exp7_olmo.json]
 """
 import json
 import sys
@@ -68,8 +68,8 @@ def paired_difference(x: list[ItemData], y: list[ItemData], metric: str, seed: i
     return dict(n_items=len(d), residual_difference=mean, ci95=(lo, hi), perm_p=float(p))
 
 
-def main(out_dir: str):
-    exp = json.loads((ROOT / "experiments/exp7_olmo.json").read_text())
+def main(out_dir: str, exp_path: str = "experiments/exp7_olmo.json"):
+    exp = json.loads((ROOT / exp_path).read_text())
     items = {i.item_id: i for i in (Item.model_validate_json(l) for l in (ROOT / exp["items"]).read_text().splitlines())}
     layer0 = {}
     for who, p in exp["layer0"].items():
@@ -143,4 +143,4 @@ def main(out_dir: str):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(*sys.argv[1:3])
