@@ -308,6 +308,7 @@ A's answer with known probability c.
 
 | Date | Problem | Fix |
 |---|---|---|
+| 2026-10-03 | Kaggle changed its default image overnight (`…37c64f7d` → `…2757e0c7`: Python 3.12 → 3.13, CUDA 12.8 → 13). The unpinned `pip install vllm` then crashed both Experiment 7 replication jobs (PyTorch/TorchAudio CUDA mismatch) before any answer was generated; ~1 GPU-minute lost, no data affected | `kaggle/env.json` pins the 2026-10-02 image and `vllm==0.30.0`; jobs drop the unused torchaudio, print Python/torch/vLLM versions, and **stop** if Python or vLLM differ, so no data can come from a different stack than Layer 0. Replication Exp 7 jobs relaunched |
 | 2026-10-02 | Gemma retry used the wrong switch: vLLM 0.30 ignores the `VLLM_ATTENTION_BACKEND` env var | Must pass the backend through the engine arguments instead; untested so far |
 | 2026-10-02 | Gemma-4-E4B would not start on T4 (`exp0_gemma` v1): vLLM's Triton attention kernel needs 96 KB of on-chip shared memory for Gemma-4's large attention heads; the T4 has 64 KB. Not a float16 problem | Retrying with vLLM's FlexAttention backend; OLMo-3-7B tested in the same Kaggle job as the fallback. Jobs can now run several experiments, each in its own process |
 | 2026-10-02 | Reasoning Gym math generator: wrong answer keys and unused numbers | Wrote `math_word.py`: 10 templates, every quantity used, exact integer answers; a test perturbs each hidden quantity and checks the answer changes |
