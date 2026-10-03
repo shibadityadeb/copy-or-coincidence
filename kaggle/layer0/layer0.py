@@ -6,13 +6,24 @@ REPO = "https://github.com/shibadityadeb/copy-or-coincidence.git"
 COMMIT = "__COMMIT__"
 EXPERIMENT = "__EXPERIMENT__"
 RUN_ID = "__RUN_ID__"
+VLLM = "__VLLM__"          # pinned in kaggle/env.json
+PYTHON = "__PYTHON__"
 
 def sh(cmd):
     print("+", cmd, flush=True)
     subprocess.run(cmd, shell=True, check=True)
 
 sh(f"git clone -q {REPO} /kaggle/working/repo && cd /kaggle/working/repo && git checkout -q {COMMIT}")
-sh("pip install -q vllm pydantic datasets 2>&1 | tail -3")
+import platform
+if not platform.python_version().startswith(PYTHON):
+    raise SystemExit(f"STOP: Kaggle image has Python {platform.python_version()}, expected {PYTHON}. Image pin not honoured.")
+sh(f"pip install -q vllm=={VLLM} pydantic datasets 2>&1 | tail -3")
+sh("pip uninstall -y -q torchaudio 2>&1 | tail -1")     # unused; a mismatched build breaks vLLM's import
+import importlib.metadata as md
+versions = {p: md.version(p) for p in ("vllm", "torch", "transformers")}
+print("VERSIONS", platform.python_version(), versions, flush=True)
+if versions["vllm"] != VLLM:
+    raise SystemExit(f"STOP: vLLM {versions['vllm']} installed, expected {VLLM}")
 sh("cd /kaggle/working/repo && pip install -q -e . --no-deps")
 sh("nvidia-smi --query-gpu=name,memory.total --format=csv")
 os.chdir("/kaggle/working/repo")
