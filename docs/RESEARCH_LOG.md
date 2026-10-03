@@ -39,6 +39,7 @@ evaluation, and does who-speaks-first matter.
 | 4 | Checker validation vs 150 hand-labelled answers (target ≥95% / ≥85%) | ⏳ |
 | 5 | Null-model code validated on simulated data; **Experiment 1 PASS** on real data | ✅ 2026-10-02 |
 | 6 | Experiment 7: A→B (steps / answer only), B→A, random-answer control | ✅ 2026-10-02 — **all 5 pre-registered hypotheses supported** |
+| 6b | Replication on Qwen3.5-4B and Nemotron-Nano-9B-v2 (Layer 0, Exp 1, Exp 7, Exp 7b) | ✅ 2026-10-03 — Exp 1 PASS for both; Exp 7b replication criterion met for all three families |
 | 7 | Analysis + write-up | ⏳ |
 | 8 | Publish dataset on Hugging Face as `copy-or-coincidence` (CC-BY-4.0, public, canary GUID `92afb6b4-…`) | ⏳ **at the end**, after final tweaks; prepared by `release/make_hf_release.py` |
 
@@ -87,6 +88,8 @@ candidate model's training cutoff.
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
+| 2026-10-03 | **Experiment 7b**: clarified peer message, rerun all three families (Shibaditya) | Qwen read peer_v1 as "verify the peer"; an identical, clear protocol for every model is needed for a cross-family comparison, and v1 vs v2 doubles as the framing robustness check | Rerun Qwen only (confounds comparisons); report Qwen's steps condition only |
+| 2026-10-03 | Kaggle environment pinned (`kaggle/env.json`) | Kaggle changed its default image; every run must use the Layer 0 stack | Rebuild everything on the new image |
 | 2026-10-02 | **Third family = Nemotron-Nano-9B-v2** (by the rule in the next row; Phi-4-mini ineligible) | Only eligible candidate; closest stated cutoff (Sep 2024) and size (8.9B) to OLMo; 5.3 points from OLMo's accuracy on the screening items | — |
 | 2026-10-02 | **Third-family selection rule, fixed before screening:** candidates with a *stated* training cutoff near OLMo's (Dec 2024) and comparable size — Nemotron-Nano-9B-v2 (NVIDIA, 8.9B, Sep 2024) and Phi-4-mini (Microsoft, 3.8B, Jun 2024) — run on the same 60-item `cep_v2` slice (K = 3, twice). Eligible if ≥ 95% readable and final answers stable; choose the eligible one closest to OLMo's accuracy on those items; tie (< 2 points) → closer cutoff. *Note: this row was meant to be added before screening, but the edit did not apply on this branch (wrong text anchor). The rule was nevertheless fixed before any result, in commit `d83a899`'s message and in `experiments/screen_*.json`.* | Shibaditya asked for comparable cutoff, size and task ability; public benchmark tables use incompatible setups, so ability is measured on our own items (the guide's "matched capability") | SmolLM3, Ministral-3, Granite-4, Falcon-H1, InternLM3 (no stated cutoff) |
 | 2026-10-02 | Syllogisms: "unanswerable" stays a wrong, distinct answer (original scoring kept) | Valid answers are Yes/No; "unanswerable" is a different response from "No", so merging them would change what counts as agreement; keeps the pre-registered scoring with no post-hoc change | Score it as "No" (PR #3, closed); count it correct but distinct |
@@ -121,7 +124,7 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Answer keys wrong or ambiguous | Independent second solver re-derives all 600 keys (`analysis/verify_keys.py`, run in the test suite) + LLM wording review + human spot-check with a pre-stated exclusion rule | ✅ solver + review + human 30/30 |
 | Grading wrong | Code-only grading; validate on 150 human-labelled answers (≥95% correct/incorrect, ≥85% error class); checker frozen and hashed | ⏳ |
 | Underpowered | 600 items; simulate power from real Layer-0 distributions before fixing R for Exp 7 | ⏳ |
-| Result specific to one model | Replicate on a second family (Gemma-4-E4B) and report sign + magnitude | ⏳ |
+| Result specific to one model | Replicate on further families and report sign + magnitude | ✅ Qwen3.5-4B and Nemotron-Nano-9B-v2: Exp 1 PASS, Exp 7b H1 + H4 supported for all three |
 | Result specific to one task style | 20 trick templates, 25 false-world cases, syllogisms, 10 math templates; template as random effect | ✅ |
 | Analysis chosen after seeing data | Pre-register ≤ 5 primary hypotheses per experiment as a git-timestamped file before running it; Holm correction; everything else labelled exploratory | ✅ Exp 1 and Exp 7 pre-registered |
 | Statistics overstate precision | Item is the unit: item-bootstrap CIs, within-item permutation tests, mixed models with item + template random effects | ⏳ |
@@ -131,6 +134,61 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
+
+### 2026-10-03: Experiment 7b, clarified peer message, three families — **replication criterion met** (pre-registered in `prereg/exp7b_peer_v2.md`)
+Identical to Experiment 7 except the peer message ends with "Give your final answer to the problem above."
+(`prompts/peer_v2.txt`). 36,000 receiver answers; all three runs on the pinned stack (Python 3.12.13,
+vLLM 0.30.0, torch 2.13.0, transformers 5.18.0).
+
+**Validity check** (share of number items answered as a verdict on the peer; > 5% invalidates a condition):
+OLMo 0% everywhere; Nemotron 0% everywhere; **Qwen** `seq_steps` 0.0%, `seq_steps_rev` 0.2%, but
+`seq_answer` **16.4%** and `random_answer` **13.6%** → those two conditions are **invalid for Qwen** (down from
+48.0% / 38.5% with peer_v1, but still above the threshold). Qwen's H2 and H3 are therefore not tested.
+
+| Hypothesis (7b) | OLMo | Qwen | Nemotron |
+|---|---|---|---|
+| H1 steps: same answer | **+0.081** [+0.069, +0.095] ✅ | **+0.047** [+0.036, +0.060] ✅ | **+0.098** [+0.083, +0.114] ✅ |
+| H2 steps − answer only | +0.018 [+0.011, +0.026] ✅ | invalid condition | +0.046 [+0.036, +0.057] ✅ |
+| H3 random answer adopted | +0.141 [+0.121, +0.161] ✅ | invalid condition | +0.081 [+0.063, +0.101] ✅ |
+| H4 steps: joint error | **+0.036** [+0.027, +0.045] ✅ | **+0.007** [+0.002, +0.013] ✅ | **+0.039** [+0.028, +0.049] ✅ |
+| H5 steps: both on lure | +0.014 [+0.005, +0.022] ✅ | +0.002 [+0.000, +0.005] ✅ (Holm p = 0.026) | +0.008 [+0.003, +0.013] ✅ |
+
+All Holm-adjusted p = 0.0025 unless noted. **Replication criterion (H1 and H4 supported in valid conditions)
+met for all three families.**
+
+**Decomposition of joint error with reasoning shown** (observed = predicted by solo behaviour + interaction):
+OLMo 0.117 = 0.081 + 0.036 (**31%** interaction); Qwen 0.036 = 0.028 + 0.007 (**20%**); Nemotron 0.092 =
+0.053 + 0.039 (**42%**). Qwen, the most accurate model (93%), makes few errors and shows the smallest share.
+
+**Framing robustness** (secondary; peer_v2 − peer_v1, per-item paired, 95% CI): H1 and H4 are supported
+under both messages for OLMo and Nemotron → the core conclusion is robust to framing. The clarifying sentence
+changed effects only modestly: OLMo `seq_steps` same-answer −0.006 [−0.011, −0.001], joint error −0.004
+[−0.007, −0.001]; OLMo random-answer adoption fell most (same answer −0.038, joint error −0.035);
+Nemotron `seq_steps` unchanged (+0.002 [−0.002, +0.005]); Nemotron random-answer rose slightly (+0.013).
+
+**Interpretation (cautious):** the "verify the peer" reading is a model-specific response to the protocol
+(Qwen only); stating what to answer reduces but does not remove it. For the paper: Qwen contributes the
+reasoning-shown condition only.
+
+### 2026-10-03: Experiment 7 (peer_v1) replications
+- **Nemotron-Nano-9B-v2: H1–H5 all supported** — same answer +0.097 [+0.082, +0.112], joint error +0.036
+  [+0.027, +0.046] (40% of observed joint error), lure +0.009, steps vs answer-only +0.043, random answer +0.068.
+- **Qwen3.5-4B: protocol misread.** Qwen answered 48.0% (`seq_answer`), 38.5% (`random_answer`) and 3.4%
+  (`seq_steps`) of number items with "true"/"false", judging the peer instead of solving (0% for OLMo and
+  Nemotron, 0% in every Layer 0). As run: H1, H2, H4, H5 supported, H3 not — H2/H3 uninterpretable for Qwen.
+  Led to Experiment 7b (decision by Shibaditya: clarify the message and rerun all three).
+- First launch of both jobs crashed at start-up because Kaggle changed its default image (see §6); relaunched pinned.
+
+### 2026-10-03: Experiment 1 for Qwen3.5-4B and Nemotron-Nano-9B-v2 — **both PASS**
+| Model | Layer 0 accuracy | Overall joint-error residual [95% CI] | Same-answer residual | Naive global "excess" | Verdict |
+|---|---|---|---|---|---|
+| Qwen3.5-4B | 93.1 / 93.4% | −0.0021 [−0.0059, +0.0016] | +0.0074 [−0.0018, +0.0169] | +0.022 (+0.056 on math) | PASS |
+| Nemotron-Nano-9B-v2 | 90.1 / 90.0% | +0.0019 [−0.0035, +0.0073] | −0.0021 [−0.0102, +0.0055] | +0.045 | PASS |
+All 15 applicable residuals per model have CIs containing 0 with |residual| < 0.012. Together with OLMo:
+**the item-conditioned null gives zero for non-interacting agents in all three families, while the naive
+baseline reports +2.2 to +6.5 points of spurious excess in every one.**
+Layer 0 notes — Qwen: readable 97.0%, truncated 3.4%, syllogisms 97.6% (no "unanswerable" habit), missing-premise
+77.0%. Nemotron: readable 99.9%, truncated 5.8%, trick-question lure rate 6.2%.
 
 ### 2026-10-02: Third-family screening, round 1 (60 `cep_v2` items × 3, run twice)
 - **Phi-4-mini: ineligible.** Accuracy 58.3% (rerun 57.8%) vs OLMo 93.0% on the same items (gap 34.7 points);

@@ -4,7 +4,7 @@
 lives, and one checklist of what is done and what is left. Update it whenever anything changes (mark items,
 add new ones, record new paths). Details, numbers and reasoning live in [`RESEARCH_LOG.md`](RESEARCH_LOG.md).
 
-Last updated: 2026-10-02
+Last updated: 2026-10-03
 
 ---
 
@@ -18,8 +18,8 @@ Every experiment exists to answer a "why" question, and every claim needs conver
 
 **Working title:** *Copy or Coincidence? Why Language-Model Agents Converge on the Same Wrong Answers*
 
-**The thesis so far:** about two thirds of shared errors would happen anyway (hard questions, shared blind
-spots); about one third is created by interaction. Copying looks mostly like *tipping* (the peer decides
+**The thesis so far:** across three model families, most shared errors would happen anyway (hard questions,
+shared blind spots), and **20–42% is created by interaction** (OLMo 31%, Qwen 20%, Nemotron 42%). Copying looks mostly like *tipping* (the peer decides
 between answers the agent already half-believes), plus *persuasion* by shown reasoning, and it is silent.
 
 **The four depths of "why"** (the paper's spine):
@@ -93,8 +93,8 @@ between answers the agent already half-believes), plus *persuasion* by shown rea
 | Role | Model | Status |
 |---|---|---|
 | Main | OLMo-3-7B-Instruct (Allen AI; cutoff Dec 2024; open data) | Layer 0, Exp 1, Exp 7 ✅ |
-| 2nd family | Qwen3.5-4B (Alibaba) | Layer 0 🔄 |
-| 3rd family | Nemotron-Nano-9B-v2 (NVIDIA; cutoff Sep 2024) | selected by screening; Layer 0 🔄 |
+| 2nd family | Qwen3.5-4B (Alibaba) | Layer 0, Exp 1 PASS, Exp 7b ✅ (answer-only/random conditions invalid: Qwen judges the peer) |
+| 3rd family | Nemotron-Nano-9B-v2 (NVIDIA; cutoff Sep 2024) | Layer 0, Exp 1 PASS, Exp 7 + 7b ✅ (all H1–H5) |
 | Rejected | Gemma-4-E4B (won't run on T4), Phi-4-mini (58% vs OLMo 93%) | — |
 
 ## 5. Master checklist
@@ -119,9 +119,11 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
   steps, fabrication contagion on missing-premise items, silent conformity
 
 ### C. Replication across families
-- 🔄 Qwen3.5-4B: Layer 0 running → Exp 1 (gate) → Exp 7 (branch `replication/qwen`, pre-registered)
-- 🔄 Nemotron-Nano-9B-v2: Layer 0 running → Exp 1 (gate) → Exp 7 (branch `screen/third-family`, PR #6)
-- ⬜ Three-family comparison of Exp 7 effects
+- ✅ Qwen3.5-4B: Layer 0, Exp 1 PASS, Exp 7 (misread protocol), Exp 7b (H1, H4, H5 supported; H2/H3 invalid)
+- ✅ Nemotron-Nano-9B-v2: Layer 0, Exp 1 PASS, Exp 7 and Exp 7b (H1–H5 supported in both)
+- ✅ Experiment 7b (clarified message, all three families): replication criterion met; framing robustness ✅
+- ✅ Three-family comparison (`analysis/compare_families.py`)
+- ✅ Kaggle environment pinned after Kaggle's image change (`kaggle/env.json`)
 
 ### D. Gaps from the field guide: 🔴 critical
 - ⬜ **N4 mode-finding null** on contested items: formal test of "tipping" vs real influence (no GPU)
@@ -162,12 +164,11 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 
 | Branch | Content | PR |
 |---|---|---|
-| `replication/qwen` | Qwen pre-registration, configs, path-parameterised analyses | not opened yet |
-| `screen/third-family` | Screening, Nemotron selection and pre-registration | #6 open |
-| `gemma/flex-attention` | Gemma attempts, engine-kwarg pass-through, log of the failure | not opened yet |
-| `validation/checker-labels` | Label sheet, agreement script, blind-reader result | not opened yet |
+| `exp7b/peer-v2` | Qwen + Nemotron replication (Layer 0, Exp 1, Exp 7), Exp 7b for all three, comparison script, log + plan updates | to open |
+| `gemma/flex-attention` | Gemma attempts, log of the T4 failure | not opened (log entries only) |
+| `validation/checker-labels` | Label sheet, agreement script, blind-reader result | not opened yet (waiting on human adjudication) |
 | `analysis/why-follow` | (local) exploratory why-follow analysis, uncommitted | — |
-| `docs/project-plan` | This file, CLAUDE.md, gap analysis in the log | this PR |
+| `replication/qwen` | superseded: fully contained in `exp7b/peer-v2` | — |
 
 ## 7. Session start routine (for Claude)
 
