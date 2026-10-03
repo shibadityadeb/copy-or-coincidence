@@ -1,0 +1,324 @@
+{
+  "olmo": {
+    "tipping_vs_transmission": {
+      "n_items": 12,
+      "receiver_gives_shown": [
+        0.9722222222222222,
+        0.9166666666666665,
+        1.0
+      ],
+      "receiver_gives_joint_mode": [
+        0.027777777777777776,
+        0.0,
+        0.08333333333333333
+      ],
+      "paired_shown_minus_mode": [
+        0.9444444444444443,
+        0.8333333333333334,
+        1.0
+      ],
+      "solo_rate_of_shown": [
+        0.39999999999999997,
+        0.3375000000000001,
+        0.46249999999999997
+      ],
+      "solo_rate_of_mode": [
+        0.5166666666666667,
+        0.46666666666666673,
+        0.5666666666666667
+      ]
+    },
+    "models_seq_steps": {
+      "n_answers": 3000,
+      "ll_per_answer": {
+        "independent (N3)": -0.2598928295530808,
+        "mixture": -0.22956942669939198,
+        "mode-finding (N4)": -0.4178205247279893,
+        "pure copy": -0.13393572465264464,
+        "deference weight": -0.09909639660122706
+      },
+      "aic": {
+        "independent (N3)": 1559.3569773184847,
+        "mixture": 1377.4165601963518,
+        "mode-finding (N4)": 2506.923148367936,
+        "pure copy": 803.6143479158678,
+        "deference weight": 596.5783796073623
+      },
+      "alpha": [
+        0.861,
+        0.8089500000000001,
+        0.900525
+      ]
+    },
+    "models_seq_answer": {
+      "n_answers": 3000,
+      "ll_per_answer": {
+        "independent (N3)": -0.22521053133691332,
+        "mixture": -0.20212446667344186,
+        "mode-finding (N4)": -0.3805782582177082,
+        "pure copy": -0.2426369442965192,
+        "deference weight": -0.13682881707616681
+      },
+      "aic": {
+        "independent (N3)": 1351.26318802148,
+        "mixture": 1212.7468000406511,
+        "mode-finding (N4)": 2283.469549306249,
+        "pure copy": 1455.8216657791152,
+        "deference weight": 822.9729024570008
+      },
+      "alpha": [
+        0.663,
+        0.596475,
+        0.7335749999999999
+      ]
+    },
+    "models_random_answer": {
+      "n_answers": 3000,
+      "ll_per_answer": {
+        "independent (N3)": -0.7525461300323517,
+        "mixture": -0.5304945971124921,
+        "mode-finding (N4)": -1.0884357806249105,
+        "pure copy": -1.5999835819881025,
+        "deference weight": -0.3966101844324202
+      },
+      "aic": {
+        "independent (N3)": 4515.27678019411,
+        "mixture": 3182.9675826749526,
+        "mode-finding (N4)": 6530.614683749463,
+        "pure copy": 9599.901491928615,
+        "deference weight": 2381.6611065945212
+      },
+      "alpha": [
+        0.337,
+        0.298475,
+        0.373525
+      ]
+    },
+    "decomposition": {
+      "n_wrong": 366,
+      "shared_share": [
+        0.6885245901639344,
+        0.6103872230710465,
+        0.7625031565656565
+      ],
+      "created_share": [
+        0.27595628415300544,
+        0.20679343466752226,
+        0.35239067055393586
+      ],
+      "created_rate_per_answer": [
+        0.033666666666666664,
+        0.025,
+        0.04300833333333329
+      ],
+      "created_rate_per_answer_random": [
+        0.123,
+        0.10633333333333334,
+        0.14
+      ],
+      "lure_amplification_contested": [
+        -0.1699824330259113,
+        -0.3062241985068072,
+        -0.041897233201581056
+      ],
+      "n_contested_lure_items": 8
+    }
+  },
+  "qwen": {
+    "tipping_vs_transmission": {
+      "n_items": 4,
+      "receiver_gives_shown": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "receiver_gives_joint_mode": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "paired_shown_minus_mode": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "solo_rate_of_shown": [
+        0.30000000000000004,
+        0.22499999999999998,
+        0.37500000000000006
+      ],
+      "solo_rate_of_mode": [
+        0.44999999999999996,
+        0.4,
+        0.55
+      ]
+    },
+    "models_seq_steps": {
+      "n_answers": 3000,
+      "ll_per_answer": {
+        "independent (N3)": -0.20818374665911937,
+        "mixture": -0.18417416702266573,
+        "mode-finding (N4)": -0.22975445536832145,
+        "pure copy": -0.2780614701855482,
+        "deference weight": -0.14908690671301905
+      },
+      "aic": {
+        "independent (N3)": 1249.1024799547163,
+        "mixture": 1105.0450021359943,
+        "mode-finding (N4)": 1378.5267322099287,
+        "pure copy": 1668.3688211132894,
+        "deference weight": 896.5214402781144
+      },
+      "alpha": [
+        0.526,
+        0.445,
+        0.602525
+      ]
+    },
+    "decomposition": {
+      "n_wrong": 145,
+      "shared_share": [
+        0.3724137931034483,
+        0.2142720828789531,
+        0.5126707195203197
+      ],
+      "created_share": [
+        0.36551724137931035,
+        0.25161000579486187,
+        0.4857193158953722
+      ],
+      "created_rate_per_answer": [
+        0.017666666666666667,
+        0.011666666666666667,
+        0.024333333333333332
+      ],
+      "lure_amplification_contested": null,
+      "n_contested_lure_items": 0
+    }
+  },
+  "nemotron": {
+    "tipping_vs_transmission": {
+      "n_items": 8,
+      "receiver_gives_shown": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "receiver_gives_joint_mode": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "paired_shown_minus_mode": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "solo_rate_of_shown": [
+        0.34791666666666665,
+        0.20625,
+        0.5166666666666666
+      ],
+      "solo_rate_of_mode": [
+        0.4375,
+        0.325,
+        0.55
+      ]
+    },
+    "models_seq_steps": {
+      "n_answers": 3000,
+      "ll_per_answer": {
+        "independent (N3)": -0.33708333673720303,
+        "mixture": -0.31034904523282464,
+        "mode-finding (N4)": -0.43976418706427195,
+        "pure copy": -0.07716726839060478,
+        "deference weight": -0.05404560747714107
+      },
+      "aic": {
+        "independent (N3)": 2022.5000204232183,
+        "mixture": 1862.094271396948,
+        "mode-finding (N4)": 2638.5851223856316,
+        "pure copy": 463.0036103436287,
+        "deference weight": 326.2736448628464
+      },
+      "alpha": [
+        0.908,
+        0.867475,
+        0.940525
+      ]
+    },
+    "models_seq_answer": {
+      "n_answers": 3000,
+      "ll_per_answer": {
+        "independent (N3)": -0.22670599409233433,
+        "mixture": -0.20393677374967592,
+        "mode-finding (N4)": -0.2878822879238672,
+        "pure copy": -0.3774937879239524,
+        "deference weight": -0.166885618267945
+      },
+      "aic": {
+        "independent (N3)": 1360.235964554006,
+        "mixture": 1223.6206424980555,
+        "mode-finding (N4)": 1727.2937275432034,
+        "pure copy": 2264.962727543714,
+        "deference weight": 1003.31370960767
+      },
+      "alpha": [
+        0.457,
+        0.372475,
+        0.5415749999999999
+      ]
+    },
+    "models_random_answer": {
+      "n_answers": 3000,
+      "ll_per_answer": {
+        "independent (N3)": -0.4964154731880133,
+        "mixture": -0.46764202840279806,
+        "mode-finding (N4)": -0.6913975930223281,
+        "pure copy": -2.0708607181060836,
+        "deference weight": -0.32308204123602974
+      },
+      "aic": {
+        "independent (N3)": 2978.49283912808,
+        "mixture": 2805.8521704167883,
+        "mode-finding (N4)": 4148.3855581339685,
+        "pure copy": 12425.164308636502,
+        "deference weight": 1940.4922474161783
+      },
+      "alpha": [
+        0.177,
+        0.14200000000000002,
+        0.2130999999999999
+      ]
+    },
+    "decomposition": {
+      "n_wrong": 278,
+      "shared_share": [
+        0.4244604316546763,
+        0.3148066352571653,
+        0.53633628419165
+      ],
+      "created_share": [
+        0.5719424460431655,
+        0.4647887323943662,
+        0.6883603750280709
+      ],
+      "created_rate_per_answer": [
+        0.053,
+        0.041,
+        0.066
+      ],
+      "created_rate_per_answer_random": [
+        0.087,
+        0.07166666666666667,
+        0.10466666666666667
+      ],
+      "lure_amplification_contested": [
+        0.3142857142857142,
+        0.3142857142857142,
+        0.3142857142857142
+      ],
+      "n_contested_lure_items": 1
+    }
+  }
+}
