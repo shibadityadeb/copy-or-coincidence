@@ -1,0 +1,541 @@
+{
+  "olmo/seq_steps": {
+    "n_mixed_items": 167,
+    "alpha_right": {
+      "alpha": 0.987,
+      "ci": [
+        0.962,
+        1.0
+      ],
+      "n_items": 153,
+      "n_runs": 584
+    },
+    "alpha_wrong": {
+      "alpha": 0.9550000000000001,
+      "ci": [
+        0.911475,
+        0.989
+      ],
+      "n_items": 93,
+      "n_runs": 239
+    },
+    "discrimination": {
+      "D": 0.03199999999999992,
+      "ci": [
+        -0.009000000000000008,
+        0.07452499999999994
+      ]
+    },
+    "by_certainty_wrong_shown": {
+      "certain (H=0)": {
+        "alpha": 0.8200000000000001,
+        "ci": [
+          0.633,
+          0.9550000000000001
+        ],
+        "n_items": 29,
+        "n_runs": 84
+      },
+      "some doubt (0<H<=1)": {
+        "alpha": 0.971,
+        "ci": [
+          0.924475,
+          1.0
+        ],
+        "n_items": 76,
+        "n_runs": 206
+      },
+      "very unsure (H>1)": {
+        "alpha": 0.936,
+        "ci": [
+          0.841475,
+          1.0
+        ],
+        "n_items": 26,
+        "n_runs": 75
+      }
+    },
+    "by_plausibility_wrong_shown": {
+      "never gives it alone": {
+        "alpha": 0.845,
+        "ci": [
+          0.7439,
+          0.930525
+        ],
+        "n_items": 41,
+        "n_runs": 51
+      },
+      "sometimes gives it alone": {
+        "alpha": 0.986,
+        "ci": [
+          0.9590000000000001,
+          1.0
+        ],
+        "n_items": 103,
+        "n_runs": 314
+      }
+    }
+  },
+  "olmo/seq_answer": {
+    "n_mixed_items": 167,
+    "alpha_right": {
+      "alpha": 0.864,
+      "ci": [
+        0.787475,
+        0.927
+      ],
+      "n_items": 153,
+      "n_runs": 584
+    },
+    "alpha_wrong": {
+      "alpha": 0.733,
+      "ci": [
+        0.62595,
+        0.8280500000000001
+      ],
+      "n_items": 93,
+      "n_runs": 239
+    },
+    "discrimination": {
+      "D": 0.131,
+      "ci": [
+        0.0029999999999999446,
+        0.23952500000000002
+      ]
+    },
+    "by_certainty_wrong_shown": {
+      "certain (H=0)": {
+        "alpha": 0.428,
+        "ci": [
+          0.206375,
+          0.6955749999999999
+        ],
+        "n_items": 29,
+        "n_runs": 84
+      },
+      "some doubt (0<H<=1)": {
+        "alpha": 0.712,
+        "ci": [
+          0.601475,
+          0.807
+        ],
+        "n_items": 76,
+        "n_runs": 206
+      },
+      "very unsure (H>1)": {
+        "alpha": 0.768,
+        "ci": [
+          0.589,
+          0.914525
+        ],
+        "n_items": 26,
+        "n_runs": 75
+      }
+    },
+    "by_plausibility_wrong_shown": {
+      "never gives it alone": {
+        "alpha": 0.531,
+        "ci": [
+          0.37595,
+          0.6716249999999999
+        ],
+        "n_items": 41,
+        "n_runs": 51
+      },
+      "sometimes gives it alone": {
+        "alpha": 0.766,
+        "ci": [
+          0.6589,
+          0.849525
+        ],
+        "n_items": 103,
+        "n_runs": 314
+      }
+    }
+  },
+  "olmo/random_answer": {
+    "n_mixed_items": 167,
+    "alpha_right": {
+      "alpha": 0.779,
+      "ci": [
+        0.6909500000000001,
+        0.86705
+      ],
+      "n_items": 147,
+      "n_runs": 350
+    },
+    "alpha_wrong": {
+      "alpha": 0.577,
+      "ci": [
+        0.505475,
+        0.647525
+      ],
+      "n_items": 155,
+      "n_runs": 485
+    },
+    "discrimination": {
+      "D": 0.20200000000000007,
+      "ci": [
+        0.07947499999999996,
+        0.297525
+      ]
+    },
+    "by_certainty_wrong_shown": {
+      "certain (H=0)": {
+        "alpha": 0.331,
+        "ci": [
+          0.28747500000000004,
+          0.379525
+        ],
+        "n_items": 271,
+        "n_runs": 740
+      },
+      "some doubt (0<H<=1)": {
+        "alpha": 0.558,
+        "ci": [
+          0.486,
+          0.629
+        ],
+        "n_items": 132,
+        "n_runs": 407
+      },
+      "very unsure (H>1)": {
+        "alpha": 0.6880000000000001,
+        "ci": [
+          0.5689000000000001,
+          0.793
+        ],
+        "n_items": 32,
+        "n_runs": 108
+      }
+    },
+    "by_plausibility_wrong_shown": {
+      "never gives it alone": {
+        "alpha": 0.377,
+        "ci": [
+          0.32895,
+          0.42
+        ],
+        "n_items": 334,
+        "n_runs": 876
+      },
+      "sometimes gives it alone": {
+        "alpha": 0.598,
+        "ci": [
+          0.51695,
+          0.681525
+        ],
+        "n_items": 160,
+        "n_runs": 379
+      }
+    }
+  },
+  "qwen/seq_steps": {
+    "n_mixed_items": 171,
+    "alpha_right": {
+      "alpha": 0.76,
+      "ci": [
+        0.65,
+        0.8595749999999999
+      ],
+      "n_items": 168,
+      "n_runs": 737
+    },
+    "alpha_wrong": {
+      "alpha": 0.579,
+      "ci": [
+        0.455475,
+        0.72105
+      ],
+      "n_items": 46,
+      "n_runs": 82
+    },
+    "discrimination": {
+      "D": 0.18100000000000005,
+      "ci": [
+        -0.007674999999999997,
+        0.349525
+      ]
+    },
+    "by_certainty_wrong_shown": {
+      "certain (H=0)": {
+        "alpha": 0.122,
+        "ci": [
+          0.0,
+          0.428
+        ],
+        "n_items": 12,
+        "n_runs": 21
+      },
+      "some doubt (0<H<=1)": {
+        "alpha": 0.514,
+        "ci": [
+          0.338,
+          0.6817249999999998
+        ],
+        "n_items": 32,
+        "n_runs": 56
+      },
+      "very unsure (H>1)": {
+        "alpha": 0.715,
+        "ci": [
+          0.54395,
+          0.86305
+        ],
+        "n_items": 19,
+        "n_runs": 42
+      }
+    },
+    "by_plausibility_wrong_shown": {
+      "never gives it alone": {
+        "alpha": 0.406,
+        "ci": [
+          0.242,
+          0.55205
+        ],
+        "n_items": 37,
+        "n_runs": 41
+      },
+      "sometimes gives it alone": {
+        "alpha": 0.755,
+        "ci": [
+          0.5593750000000001,
+          0.9085749999999999
+        ],
+        "n_items": 33,
+        "n_runs": 78
+      }
+    }
+  },
+  "nemotron/seq_steps": {
+    "n_mixed_items": 146,
+    "alpha_right": {
+      "alpha": 1.0,
+      "ci": [
+        1.0,
+        1.0
+      ],
+      "n_items": 136,
+      "n_runs": 507
+    },
+    "alpha_wrong": {
+      "alpha": 0.843,
+      "ci": [
+        0.776,
+        0.900525
+      ],
+      "n_items": 91,
+      "n_runs": 220
+    },
+    "discrimination": {
+      "D": 0.15700000000000003,
+      "ci": [
+        0.09799999999999998,
+        0.22504999999999994
+      ]
+    },
+    "by_certainty_wrong_shown": {
+      "certain (H=0)": {
+        "alpha": 0.751,
+        "ci": [
+          0.5376000000000001,
+          0.948575
+        ],
+        "n_items": 26,
+        "n_runs": 55
+      },
+      "some doubt (0<H<=1)": {
+        "alpha": 0.8270000000000001,
+        "ci": [
+          0.6988500000000001,
+          0.925
+        ],
+        "n_items": 51,
+        "n_runs": 115
+      },
+      "very unsure (H>1)": {
+        "alpha": 0.863,
+        "ci": [
+          0.795,
+          0.925525
+        ],
+        "n_items": 45,
+        "n_runs": 127
+      }
+    },
+    "by_plausibility_wrong_shown": {
+      "never gives it alone": {
+        "alpha": 0.866,
+        "ci": [
+          0.788,
+          0.921
+        ],
+        "n_items": 63,
+        "n_runs": 104
+      },
+      "sometimes gives it alone": {
+        "alpha": 0.804,
+        "ci": [
+          0.709375,
+          0.892525
+        ],
+        "n_items": 79,
+        "n_runs": 193
+      }
+    }
+  },
+  "nemotron/seq_answer": {
+    "n_mixed_items": 146,
+    "alpha_right": {
+      "alpha": 0.9420000000000001,
+      "ci": [
+        0.893,
+        0.987
+      ],
+      "n_items": 136,
+      "n_runs": 507
+    },
+    "alpha_wrong": {
+      "alpha": 0.21,
+      "ci": [
+        0.125,
+        0.298525
+      ],
+      "n_items": 91,
+      "n_runs": 220
+    },
+    "discrimination": {
+      "D": 0.7320000000000001,
+      "ci": [
+        0.6200000000000001,
+        0.82905
+      ]
+    },
+    "by_certainty_wrong_shown": {
+      "certain (H=0)": {
+        "alpha": 0.332,
+        "ci": [
+          0.108,
+          0.5686749999999999
+        ],
+        "n_items": 26,
+        "n_runs": 55
+      },
+      "some doubt (0<H<=1)": {
+        "alpha": 0.393,
+        "ci": [
+          0.262375,
+          0.547525
+        ],
+        "n_items": 51,
+        "n_runs": 115
+      },
+      "very unsure (H>1)": {
+        "alpha": 0.14100000000000001,
+        "ci": [
+          0.05790000000000001,
+          0.23600000000000002
+        ],
+        "n_items": 45,
+        "n_runs": 127
+      }
+    },
+    "by_plausibility_wrong_shown": {
+      "never gives it alone": {
+        "alpha": 0.193,
+        "ci": [
+          0.121,
+          0.278525
+        ],
+        "n_items": 63,
+        "n_runs": 104
+      },
+      "sometimes gives it alone": {
+        "alpha": 0.331,
+        "ci": [
+          0.17695,
+          0.49204999999999993
+        ],
+        "n_items": 79,
+        "n_runs": 193
+      }
+    }
+  },
+  "nemotron/random_answer": {
+    "n_mixed_items": 146,
+    "alpha_right": {
+      "alpha": 0.923,
+      "ci": [
+        0.8304750000000001,
+        1.0
+      ],
+      "n_items": 107,
+      "n_runs": 229
+    },
+    "alpha_wrong": {
+      "alpha": 0.223,
+      "ci": [
+        0.16695000000000002,
+        0.276525
+      ],
+      "n_items": 141,
+      "n_runs": 501
+    },
+    "discrimination": {
+      "D": 0.7000000000000001,
+      "ci": [
+        0.5814250000000001,
+        0.7895249999999999
+      ]
+    },
+    "by_certainty_wrong_shown": {
+      "certain (H=0)": {
+        "alpha": 0.084,
+        "ci": [
+          0.058,
+          0.113
+        ],
+        "n_items": 287,
+        "n_runs": 781
+      },
+      "some doubt (0<H<=1)": {
+        "alpha": 0.297,
+        "ci": [
+          0.214475,
+          0.383525
+        ],
+        "n_items": 97,
+        "n_runs": 312
+      },
+      "very unsure (H>1)": {
+        "alpha": 0.139,
+        "ci": [
+          0.06995000000000001,
+          0.22752499999999998
+        ],
+        "n_items": 49,
+        "n_runs": 207
+      }
+    },
+    "by_plausibility_wrong_shown": {
+      "never gives it alone": {
+        "alpha": 0.111,
+        "ci": [
+          0.084,
+          0.14100000000000001
+        ],
+        "n_items": 369,
+        "n_runs": 980
+      },
+      "sometimes gives it alone": {
+        "alpha": 0.253,
+        "ci": [
+          0.157425,
+          0.3466249999999999
+        ],
+        "n_items": 134,
+        "n_runs": 320
+      }
+    }
+  }
+}
