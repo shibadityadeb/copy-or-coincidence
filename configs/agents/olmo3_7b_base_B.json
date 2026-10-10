@@ -1,0 +1,22 @@
+{
+  "agent_id": "olmo3-7b-base-B",
+  "model": "allenai/Olmo-3-1025-7B",
+  "revision": "a81bae42db3975be1671e27b9c9a56da1a9f980f",
+  "training_cutoff": "2024-12 (model card); training data public (Dolma 3)",
+  "vllm": {
+    "dtype": "float16",
+    "tensor_parallel_size": 2,
+    "max_model_len": 4096,
+    "max_num_seqs": 128,
+    "enable_prefix_caching": false,
+    "limit_mm_per_prompt": {}
+  },
+  "prompt": "solver_v1",
+  "temperature": 0.7,
+  "top_p": 0.95,
+  "max_tokens": 1024,
+  "enable_thinking": false,
+  "structured_output": true,
+  "training_stage": "pretraining only (Dolma 3)",
+  "prompt_format": "plain_fewshot"
+}

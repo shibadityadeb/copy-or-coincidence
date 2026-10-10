@@ -50,3 +50,17 @@ def test_same_seeds_give_same_outputs(tmp_path):
         run_independent(ITEMS[:6], AGENT, FakeBackend(), k=2, out_path=p, experiment_id="t", run_id="r",
                         log=lambda *_: None)
     assert [x["raw_output"] for x in rows(a)] == [x["raw_output"] for x in rows(b)]
+
+
+def test_plain_prompt_format_reaches_backend(tmp_path):
+    seen = []
+
+    class Spy(FakeBackend):
+        def generate(self, reqs):
+            seen.extend(r.prompt_format for r in reqs)
+            return super().generate(reqs)
+    agent = dict(AGENT, prompt_format="plain")
+    run_independent(ITEMS[:2], agent, Spy(), k=1, out_path=tmp_path / "p.jsonl", experiment_id="t", run_id="r",
+                    log=lambda *_: None)
+    assert seen == ["plain", "plain"]
+    assert all(r["prompt_format"] == "plain" for r in rows(tmp_path / "p.jsonl"))

@@ -88,6 +88,8 @@ candidate model's training cutoff.
 
 | Date | Decision | Why | Alternatives considered |
 |---|---|---|---|
+| 2026-10-10 | **Depth 3 (training origin of deference): pilot four OLMo-3-7B training stages as receivers** — Base (`Olmo-3-1025-7B`, pretraining only), Instruct-SFT, Instruct-DPO, RL-Zero-Mix (RL from base, no SFT/DPO); the final Instruct model is the existing main model. **Pilot pass rule, fixed before running:** 60-item `cep_v2` round-robin slice, K = 3, run twice; a stage is eligible if ≥ 95% of answers are readable, final answers are ≥ 95% identical across the two runs, and ≤ 10% are truncated. Accuracy is reported, not thresholded (accuracy differences are part of what is studied; the deference weight is measured relative to each receiver's own behaviour). A failing stage gets at most one documented fix attempt, else it is excluded and reported | Shibaditya chose Depth 3 next, with RL-Zero included; OLMo publishes every stage of one model, so differences between stages isolate training effects | Intervention study first |
+| 2026-10-10 | Base model uses a plain-text prompt (same instructions and question; no chat template exists); RL-Zero-Mix is loaded as `Olmo3ForCausalLM` (its config differs from the base model's only in the architecture name) | Needed to run these checkpoints at all; recorded per row (`prompt_format`) | Few-shot prompting for the base model (kept as the fallback fix) |
 | 2026-10-03 | **Experiment 7b**: clarified peer message, rerun all three families (Shibaditya) | Qwen read peer_v1 as "verify the peer"; an identical, clear protocol for every model is needed for a cross-family comparison, and v1 vs v2 doubles as the framing robustness check | Rerun Qwen only (confounds comparisons); report Qwen's steps condition only |
 | 2026-10-03 | Kaggle environment pinned (`kaggle/env.json`) | Kaggle changed its default image; every run must use the Layer 0 stack | Rebuild everything on the new image |
 | 2026-10-02 | **Third family = Nemotron-Nano-9B-v2** (by the rule in the next row; Phi-4-mini ineligible) | Only eligible candidate; closest stated cutoff (Sep 2024) and size (8.9B) to OLMo; 5.3 points from OLMo's accuracy on the screening items | — |
@@ -134,6 +136,27 @@ What a conference reviewer will test, and how this project answers it. Each row 
 | Same model as both agents | Stated as an MVP limitation; cross-family pair in replication | ⏳ |
 
 ## 5. Findings
+
+### 2026-10-10: Training-stage pilot, round 2 (after one documented fix each)
+| Stage | Accuracy (run 1 / 2) | Readable | Stable | Truncated | Verdict |
+|---|---|---|---|---|---|
+| Base (few-shot plain prompt) | 82.2% / 82.2% | 99.4% | 100% | 0.6% | **pass** |
+| RL-Zero-Mix (patched config name) | 60.6% / 60.6% | 86.1% | 98.9% | 6.1% | **fail → excluded** (its one fix was used for loading) |
+Base by family: logic 100%, trick questions 73% (21 lure answers of 180), math 100%. RL-Zero: logic 92%, trick 49%,
+math 81%, 25 unreadable. Stages in the full Depth 3 experiment: Base, SFT, DPO (+ Final from Exp 7b).
+
+### 2026-10-10: Training-stage pilot, round 1 (60 items × 3, run twice; pass rule logged beforehand)
+| Stage | Accuracy (run 1 / 2) | Readable | Stable | Truncated | Verdict |
+|---|---|---|---|---|---|
+| Base (`Olmo-3-1025-7B`, plain prompt) | 73.3% / 73.3% | 93.9% | 100% | 6.1% | **fail** (readable < 95%) |
+| Instruct-SFT | 83.9% / 84.4% | 99.4% | 98.9% | 0% | pass |
+| Instruct-DPO | 92.2% / 92.2% | 100% | 100% | 0% | pass |
+| RL-Zero-Mix | — | — | — | — | **failed to load** (`olmo2-retrofit` model type unknown to transformers; `hf_overrides` applied too late) |
+Final Instruct on the same items: 93.0%. Base by family: logic 100%, trick questions 62% (lure 13% of all
+answers), math 94%. **One documented fix each** (allowed by the rule): Base → plain prompt with two neutral
+worked examples (no trick question, no "unanswerable" case) to curb rambling; RL-Zero → load from a local
+snapshot whose `config.json` names the architecture `Olmo3ForCausalLM` / `olmo3` (weights untouched). Rerun as
+round 2 (`experiments/pilot2_stage_*.json`).
 
 ### 2026-10-10: Experiment 8, what in a peer's reasoning persuades? (pre-registered in `prereg/exp8_mechanism.md`, amendment 1 before any data)
 27,000 receiver answers (3 conditions × 3 models × 3,000), Exp 7b protocol, pinned stack (Python 3.12.13,
