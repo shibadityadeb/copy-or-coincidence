@@ -137,6 +137,14 @@ What a conference reviewer will test, and how this project answers it. Each row 
 
 ## 5. Findings
 
+### 2026-10-10: Training-stage pilot, round 2 (after one documented fix each)
+| Stage | Accuracy (run 1 / 2) | Readable | Stable | Truncated | Verdict |
+|---|---|---|---|---|---|
+| Base (few-shot plain prompt) | 82.2% / 82.2% | 99.4% | 100% | 0.6% | **pass** |
+| RL-Zero-Mix (patched config name) | 60.6% / 60.6% | 86.1% | 98.9% | 6.1% | **fail → excluded** (its one fix was used for loading) |
+Base by family: logic 100%, trick questions 73% (21 lure answers of 180), math 100%. RL-Zero: logic 92%, trick 49%,
+math 81%, 25 unreadable. Stages in the full Depth 3 experiment: Base, SFT, DPO (+ Final from Exp 7b).
+
 ### 2026-10-10: Training-stage pilot, round 1 (60 items × 3, run twice; pass rule logged beforehand)
 | Stage | Accuracy (run 1 / 2) | Readable | Stable | Truncated | Verdict |
 |---|---|---|---|---|---|

@@ -1,0 +1,35 @@
+{
+  "experiment_id": "depth3_sft",
+  "description": "Depth 3 (prereg/depth3_training_stages.md): OLMo-3 sft receiver sees exactly the Exp 7b messages (OLMo-3-7B-Instruct agent A, samples 10-14; same random answers). layer0 = message source; receiver_layer0 = this receiver's own solo answers (for its null).",
+  "items": "datasets/cep_v2/items.jsonl",
+  "R": 5,
+  "peer_prompt": "peer_v2",
+  "layer0": {
+    "A": "outputs/layer0_olmo/layer0_olmo-run1__olmo3-7b-A.jsonl",
+    "B": "outputs/layer0_olmo/layer0_olmo-run1__olmo3-7b-B.jsonl"
+  },
+  "conditions": [
+    {
+      "name": "seq_steps",
+      "receiver": "configs/agents/olmo3_7b_sft_B.json",
+      "sender": "A",
+      "show": "steps"
+    },
+    {
+      "name": "seq_answer",
+      "receiver": "configs/agents/olmo3_7b_sft_B.json",
+      "sender": "A",
+      "show": "answer"
+    },
+    {
+      "name": "random_answer",
+      "receiver": "configs/agents/olmo3_7b_sft_B.json",
+      "sender": "random",
+      "show": "answer"
+    }
+  ],
+  "backend": "vllm",
+  "batch_size": 512,
+  "out_dir": "outputs/depth3_sft",
+  "receiver_layer0": "outputs/layer0_stage_sft/layer0_stage_sft-run1__olmo3-7b-sft-B.jsonl"
+}

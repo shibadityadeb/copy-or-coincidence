@@ -1,0 +1,12 @@
+{
+  "experiment_id": "layer0_stage_dpo",
+  "description": "Depth 3 (prereg/depth3_training_stages.md): solo answers of the OLMo-3 dpo receiver, 600 cep_v2 items x K=10 (samples 0-9 = receiver null).",
+  "items": "datasets/cep_v2/items.jsonl",
+  "k": 10,
+  "agents": [
+    "configs/agents/olmo3_7b_dpo_B.json"
+  ],
+  "backend": "vllm",
+  "batch_size": 512,
+  "out_dir": "outputs/layer0_stage_dpo"
+}
