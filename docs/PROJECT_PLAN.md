@@ -4,7 +4,7 @@
 lives, and one checklist of what is done and what is left. Update it whenever anything changes (mark items,
 add new ones, record new paths). Details, numbers and reasoning live in [`RESEARCH_LOG.md`](RESEARCH_LOG.md).
 
-Last updated: 2026-10-03
+Last updated: 2026-10-10
 
 ---
 
@@ -25,7 +25,10 @@ shared favourite (N4 rejected), and behave as if they put a fixed **deference we
 (≈ 0.86–0.91 with reasoning shown for OLMo/Nemotron, 0.53 for Qwen; lower for bare or random answers).
 Deference is partly rational for bare answers (correctness, plausibility, own certainty matter), but **a peer's
 reasoning switches the checking off**: right and wrong peers are followed almost equally (Nemotron: wrong answer
-alone α 0.24, same wrong answer with reasoning α 0.88). *Reasoning persuades rather than informs.* Copying looks mostly like *tipping* (the peer decides
+alone α 0.24, same wrong answer with reasoning α 0.88). Experiment 8 shows *what* persuades: the **argument's
+content**. Receivers follow the steps over a contradicting conclusion (79–88%), reject reasoning that does not fit
+the problem (mismatched steps persuade *less* than a bare answer), but follow a **coherent wrong derivation**.
+Errors spread through fluent wrong arguments, not through authority or the look of effort. Copying looks mostly like *tipping* (the peer decides
 between answers the agent already half-believes), plus *persuasion* by shown reasoning, and it is silent.
 
 **The four depths of "why"** (the paper's spine):
@@ -141,7 +144,8 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 
 ### E. Gaps from the field guide: 🟠 important
 - ⬜ **Q1 similarity**: cross-family solo error similarity at matched accuracy (JSD, error identity vs item baseline)
-- ⬜ Mechanism controls **E** (answer hidden), **F** (conclusion flipped, N10), **G** (displayed confidence), **D** (other-model answer)
+- ✅ Mechanism controls **E** (answer hidden) and **F** (conclusion flipped, N10) + form control (mismatched steps): Experiment 8
+- ⬜ Mechanism controls **G** (displayed confidence), **D** (other-model answer)
 - ⬜ Alternative-explanation checks: formatting convergence; A restating the question
 - ⬜ Empirical power analysis from Layer 0 distributions
 - ⬜ Error identity P(same wrong | both wrong) vs item baseline; conditional mutual information
@@ -172,7 +176,7 @@ Legend: ✅ done · 🔄 in progress · ⬜ to do · ⏸ postponed (with reason)
 
 | Branch | Content | PR |
 |---|---|---|
-| `why/rational-deference` | Is deference rational? (plan + results) | to open |
+| `exp8/mechanism` | Experiment 8: pre-registration, amendment, implementation, results | to open |
 | `gemma/flex-attention` | Gemma attempts, log of the T4 failure | not opened (log entries only) |
 | `validation/checker-labels` | Label sheet, agreement script, blind-reader result | not opened yet (waiting on human adjudication) |
 | `analysis/why-follow` | (local) exploratory why-follow analysis, uncommitted | — |

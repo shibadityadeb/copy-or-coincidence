@@ -135,6 +135,41 @@ What a conference reviewer will test, and how this project answers it. Each row 
 
 ## 5. Findings
 
+### 2026-10-10: Experiment 8, what in a peer's reasoning persuades? (pre-registered in `prereg/exp8_mechanism.md`, amendment 1 before any data)
+27,000 receiver answers (3 conditions × 3 models × 3,000), Exp 7b protocol, pinned stack (Python 3.12.13,
+vLLM 0.30.0, torch 2.13.0; transformers 5.19.0 vs 5.18.0 in 7b, used only for prompt formatting). Validity: all
+conditions ≤ 3.6% judging replies (Qwen's comparison condition from 7b, `seq_answer`, is invalid, so Qwen's H3 is
+untested). Holm across the four hypotheses within each model; all supported tests have Holm p ≤ 0.002.
+
+| Hypothesis | OLMo | Qwen | Nemotron |
+|---|---|---|---|
+| H1 argument alone (answer hidden) moves receiver to A's answer | **+0.029** [+0.017, +0.041] ✅ | **+0.036** [+0.024, +0.048] ✅ | **+0.048** [+0.037, +0.060] ✅ |
+| H2a follows a conclusion that contradicts the steps | +0.032 [+0.020, +0.045] ✅ | +0.006 [−0.001, +0.014] ✗ (p_holm 0.054) | **+0.158** [+0.137, +0.179] ✅ |
+| H3 mismatched reasoning persuades more than a bare answer | **−0.098** [−0.114, −0.081] ✗ | invalid comparison | **−0.057** [−0.069, −0.046] ✗ |
+| H4 real reasoning persuades more than mismatched reasoning | **+0.116** [+0.099, +0.133] ✅ | **+0.085** [+0.072, +0.099] ✅ | **+0.103** [+0.088, +0.119] ✅ |
+
+**Flipped conclusion, raw rates** (receiver gives the attached conclusion / gives the answer the steps argue for):
+OLMo 9.3% / 88.1%; Qwen 4.2% / 81.1%; Nemotron 19.8% / 79.0%. H2b (abandons the argued answer beyond its solo
+rate): +0.015 / +0.097 / +0.103. Receiver accuracy drops under flipped conclusions for Qwen (0.827) and Nemotron
+(0.777), much less for OLMo (0.847).
+
+**What it means.**
+1. **The argument itself carries the persuasion.** With the answer hidden, the steps alone move receivers toward
+   the peer's answer (H1, all three; caveat: intermediate results can reveal the answer).
+2. **When argument and conclusion disagree, receivers mostly follow the argument** (79–88% give the argued
+   answer, 4–20% the attached conclusion). The attached conclusion still has a real pull for Nemotron (+15.8
+   points beyond its solo rate) and a small one for OLMo; Qwen ignores it.
+3. **The mere look of reasoning does not persuade; inconsistent reasoning backfires.** Steps about a different
+   question, followed by the peer's answer, persuade *less* than the bare answer (H3 reversed: −9.8 and −5.7
+   points). Receivers notice that the reasoning does not fit.
+4. **Content matters** (H4, all three): real, on-topic reasoning persuades 8.5–11.6 points more than mismatched
+   reasoning.
+
+**Refinement of the why2 synthesis.** "Reasoning switches the checking off" is too strong. Receivers *do* check
+whether the reasoning fits the problem and whether it supports the conclusion. What they do not resist is a
+**coherent, on-topic argument that leads to a wrong answer**: they follow the argument. Errors spread through
+fluent wrong derivations, not through authority or the appearance of effort.
+
 ### 2026-10-03: Is deference rational? (plan: `prereg/why2_rational_deference.md`; `analysis/why2_rational.py`)
 Deference weight α (from the why1 model) refitted on subsets, on *mixed* items (receiver solo accuracy strictly
 between 0 and 1: 146–171 items per model), 95% item-bootstrap CIs. Experiment 7b primary.
