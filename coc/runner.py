@@ -92,7 +92,8 @@ def execute(specs: list[Spec], agent: dict, backend: Backend, out_path: Path, ex
         batch_id = uuid.uuid4().hex[:10]
         reqs = [Request(system, sp.user_text, sp.seed, agent["temperature"], agent["top_p"],
                         agent["max_tokens"], agent["enable_thinking"],
-                        ANSWER_SCHEMA if agent.get("structured_output") else None) for sp in chunk]
+                        ANSWER_SCHEMA if agent.get("structured_output") else None,
+                        agent.get("prompt_format", "chat")) for sp in chunk]
         gens = backend.generate(reqs)
         with out_path.open("a") as f:
             for pos, (sp, g) in enumerate(zip(chunk, gens)):
@@ -107,7 +108,8 @@ def execute(specs: list[Spec], agent: dict, backend: Backend, out_path: Path, ex
                     quantization=backend.quantization, dtype=backend.dtype, backend=backend.name,
                     framework_version=backend.framework_version, enable_thinking=agent["enable_thinking"],
                     structured_output=bool(agent.get("structured_output")) and backend.name != "mlx",
-                    prompt_version=agent["prompt"], prompt_hash=prompt_hash, seed=sp.seed,
+                    prompt_version=agent["prompt"], prompt_hash=prompt_hash, prompt_format=agent.get("prompt_format", "chat"),
+                    seed=sp.seed,
                     temperature=agent["temperature"], top_p=agent["top_p"], max_tokens=agent["max_tokens"],
                     raw_output=g.text, normalizer_version=normalize.NORMALIZER_VERSION,
                     prompt_tokens=g.prompt_tokens, output_tokens=g.output_tokens, truncated=g.truncated,

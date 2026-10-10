@@ -21,6 +21,7 @@ class Request:
     max_tokens: int
     enable_thinking: bool = False
     json_schema: Optional[dict] = None     # if set, decoding is constrained to valid JSON of this shape
+    prompt_format: str = "chat"            # "chat" = model's chat template; "plain" = text prompt (base models)
 
 
 @dataclass
@@ -53,6 +54,10 @@ ANSWER_SCHEMA = {
     "required": ["steps", "final", "confidence"],
     "additionalProperties": False,
 }
+
+
+# Plain-text prompt for models without a chat template (OLMo-3 base): same instructions and question.
+PLAIN_PROMPT = "{system}\n\nProblem:\n{user}\n\nResponse:\n"
 
 
 def _messages(r: Request) -> list[dict]:
@@ -145,7 +150,8 @@ class VLLMBackend(Backend):
                 from vllm.sampling_params import GuidedDecodingParams
                 return {"guided_decoding": GuidedDecodingParams(json=schema)}
 
-        prompts = [self.tok.apply_chat_template(_messages(r), add_generation_prompt=True, tokenize=False,
+        prompts = [PLAIN_PROMPT.format(system=r.system, user=r.user) if r.prompt_format == "plain" else
+                   self.tok.apply_chat_template(_messages(r), add_generation_prompt=True, tokenize=False,
                                                 enable_thinking=r.enable_thinking) for r in reqs]
         params = [SamplingParams(temperature=r.temperature, top_p=r.top_p, max_tokens=r.max_tokens,
                                  seed=r.seed, **constraint(r.json_schema)) for r in reqs]

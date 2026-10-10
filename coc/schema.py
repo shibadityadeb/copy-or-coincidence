@@ -32,6 +32,7 @@ class Trial(BaseModel):
     role: str = "solver"
     prompt_version: str
     prompt_hash: str
+    prompt_format: str = "chat"            # "plain" for models without a chat template
     seed: int
     temperature: float
     top_p: float

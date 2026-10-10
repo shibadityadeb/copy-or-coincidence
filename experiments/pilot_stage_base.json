@@ -1,0 +1,13 @@
+{
+  "experiment_id": "pilot_stage_base",
+  "description": "Training-stage pilot (pretraining only (Dolma 3)): 60-item cep_v2 round-robin slice, K=3, run twice. Pass rule in docs/RESEARCH_LOG.md.",
+  "items": "datasets/cep_v2/items.jsonl",
+  "n_items": 60,
+  "k": 3,
+  "agents": [
+    "configs/agents/olmo3_7b_base_B.json"
+  ],
+  "backend": "vllm",
+  "batch_size": 256,
+  "out_dir": "outputs/pilot_stages/base"
+}
