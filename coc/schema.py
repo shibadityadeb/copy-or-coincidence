@@ -44,6 +44,7 @@ class Trial(BaseModel):
     peer_trial_ids: list[str] = Field(default_factory=list)
     peer_content_shown: Optional[str] = None
     peer_answer_norm: Optional[str] = None   # canonical form of the answer the receiver was shown
+    peer_argued_answer_norm: Optional[str] = None  # the sender's own answer (differs from shown in steps_flipped)
     retrieved_context_id: Optional[str] = None
     # output + grading
     raw_output: str

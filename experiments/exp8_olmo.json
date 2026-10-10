@@ -1,0 +1,34 @@
+{
+  "experiment_id": "exp8_olmo",
+  "description": "Experiment 8 (prereg/exp8_mechanism.md): which part of a peer's reasoning persuades. Same items, agents, Layer 0 messages (samples 10-14) and peer_v2 message as Exp 7b.",
+  "items": "datasets/cep_v2/items.jsonl",
+  "R": 5,
+  "peer_prompt": "peer_v2",
+  "layer0": {
+    "A": "outputs/layer0_olmo/layer0_olmo-run1__olmo3-7b-A.jsonl",
+    "B": "outputs/layer0_olmo/layer0_olmo-run1__olmo3-7b-B.jsonl"
+  },
+  "conditions": [
+    {
+      "name": "steps_redacted",
+      "receiver": "configs/agents/olmo3_7b_B.json",
+      "sender": "A",
+      "show": "steps_redacted"
+    },
+    {
+      "name": "steps_flipped",
+      "receiver": "configs/agents/olmo3_7b_B.json",
+      "sender": "A",
+      "show": "steps_flipped"
+    },
+    {
+      "name": "steps_mismatched",
+      "receiver": "configs/agents/olmo3_7b_B.json",
+      "sender": "A",
+      "show": "steps_mismatched"
+    }
+  ],
+  "backend": "vllm",
+  "batch_size": 512,
+  "out_dir": "outputs/exp8_olmo"
+}

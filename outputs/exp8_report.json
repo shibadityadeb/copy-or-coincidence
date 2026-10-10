@@ -1,0 +1,248 @@
+{
+  "olmo": {
+    "validity": {
+      "steps_redacted": 0.0,
+      "steps_flipped": 0.0,
+      "steps_mismatched": 0.0,
+      "exp7b seq_answer": 0.0
+    },
+    "hypotheses": {
+      "H1 argument alone (redacted)": {
+        "estimate": 0.02871666666666666,
+        "ci95": [
+          0.016781249999999998,
+          0.04113458333333333
+        ],
+        "perm_p": 0.0004997501249375312,
+        "valid": true,
+        "p_holm": 0.001999000499750125,
+        "supported": true
+      },
+      "H2a follows attached conclusion (flipped)": {
+        "estimate": 0.03206666666666667,
+        "ci95": [
+          0.02003166666666667,
+          0.04473666666666665
+        ],
+        "perm_p": 0.0004997501249375312,
+        "n_items": 600,
+        "H2b_abandons_argued": {
+          "estimate": 0.014633333333333335,
+          "ci95": [
+            0.0014991666666666695,
+            0.028734166666666665
+          ],
+          "perm_p": 0.02498750624687656,
+          "n_items": 600
+        },
+        "combined": {
+          "estimate": 0.046700000000000005,
+          "ci95": [
+            0.0231325,
+            0.07193416666666665
+          ],
+          "perm_p": 0.0004997501249375312,
+          "n_items": 600
+        },
+        "receiver_gives_shown": 0.09266666666666666,
+        "receiver_gives_argued": 0.881,
+        "valid": true,
+        "p_holm": 0.001999000499750125,
+        "supported": true
+      },
+      "H3 form persuades (mismatched - answer only)": {
+        "estimate": -0.09766666666666667,
+        "ci95": [
+          -0.11399999999999999,
+          -0.08133333333333333
+        ],
+        "perm_p": 1.0,
+        "n_items": 600,
+        "valid": true,
+        "p_holm": 1.0,
+        "supported": false
+      },
+      "H4 content persuades (real steps - mismatched)": {
+        "estimate": 0.11599999999999999,
+        "ci95": [
+          0.09933333333333333,
+          0.13333333333333333
+        ],
+        "perm_p": 0.0004997501249375312,
+        "n_items": 600,
+        "valid": true,
+        "p_holm": 0.001999000499750125,
+        "supported": true
+      }
+    },
+    "receiver_accuracy": {
+      "steps_redacted": 0.8563333333333333,
+      "steps_flipped": 0.847,
+      "steps_mismatched": 0.839
+    }
+  },
+  "qwen": {
+    "validity": {
+      "steps_redacted": 0.0005,
+      "steps_flipped": 0.0365,
+      "steps_mismatched": 0.016,
+      "exp7b seq_answer": 0.1645
+    },
+    "hypotheses": {
+      "H1 argument alone (redacted)": {
+        "estimate": 0.03576666666666667,
+        "ci95": [
+          0.02379916666666666,
+          0.047700833333333324
+        ],
+        "perm_p": 0.0004997501249375312,
+        "valid": true,
+        "p_holm": 0.0014992503748125937,
+        "supported": true
+      },
+      "H2a follows attached conclusion (flipped)": {
+        "estimate": 0.0063,
+        "ci95": [
+          -0.00046749999999999884,
+          0.014135833333333318
+        ],
+        "perm_p": 0.053973013493253376,
+        "n_items": 600,
+        "H2b_abandons_argued": {
+          "estimate": 0.09713333333333335,
+          "ci95": [
+            0.08053166666666668,
+            0.11270083333333333
+          ],
+          "perm_p": 0.0004997501249375312,
+          "n_items": 600
+        },
+        "combined": {
+          "estimate": 0.10343333333333334,
+          "ci95": [
+            0.08360000000000001,
+            0.12313416666666666
+          ],
+          "perm_p": 0.0004997501249375312,
+          "n_items": 600
+        },
+        "receiver_gives_shown": 0.042333333333333334,
+        "receiver_gives_argued": 0.8113333333333334,
+        "valid": true,
+        "p_holm": 0.053973013493253376,
+        "supported": false
+      },
+      "H3 form persuades (mismatched - answer only)": {
+        "estimate": 0.037000000000000005,
+        "ci95": [
+          0.016658333333333348,
+          0.057
+        ],
+        "perm_p": 0.0004997501249375312,
+        "n_items": 600,
+        "valid": false,
+        "p_holm": null,
+        "supported": false
+      },
+      "H4 content persuades (real steps - mismatched)": {
+        "estimate": 0.085,
+        "ci95": [
+          0.07200000000000001,
+          0.09867499999999996
+        ],
+        "perm_p": 0.0004997501249375312,
+        "n_items": 600,
+        "valid": true,
+        "p_holm": 0.0014992503748125937,
+        "supported": true
+      }
+    },
+    "receiver_accuracy": {
+      "steps_redacted": 0.9436666666666667,
+      "steps_flipped": 0.8273333333333334,
+      "steps_mismatched": 0.9033333333333333
+    }
+  },
+  "nemotron": {
+    "validity": {
+      "steps_redacted": 0.0,
+      "steps_flipped": 0.0,
+      "steps_mismatched": 0.0,
+      "exp7b seq_answer": 0.0
+    },
+    "hypotheses": {
+      "H1 argument alone (redacted)": {
+        "estimate": 0.04788333333333333,
+        "ci95": [
+          0.0369325,
+          0.059635833333333325
+        ],
+        "perm_p": 0.0004997501249375312,
+        "valid": true,
+        "p_holm": 0.001999000499750125,
+        "supported": true
+      },
+      "H2a follows attached conclusion (flipped)": {
+        "estimate": 0.15773333333333336,
+        "ci95": [
+          0.13706666666666667,
+          0.17876666666666666
+        ],
+        "perm_p": 0.0004997501249375312,
+        "n_items": 600,
+        "H2b_abandons_argued": {
+          "estimate": 0.10306666666666667,
+          "ci95": [
+            0.08199916666666668,
+            0.12536916666666664
+          ],
+          "perm_p": 0.0004997501249375312,
+          "n_items": 600
+        },
+        "combined": {
+          "estimate": 0.26080000000000003,
+          "ci95": [
+            0.22212916666666666,
+            0.3001366666666666
+          ],
+          "perm_p": 0.0004997501249375312,
+          "n_items": 600
+        },
+        "receiver_gives_shown": 0.198,
+        "receiver_gives_argued": 0.7896666666666666,
+        "valid": true,
+        "p_holm": 0.001999000499750125,
+        "supported": true
+      },
+      "H3 form persuades (mismatched - answer only)": {
+        "estimate": -0.056999999999999995,
+        "ci95": [
+          -0.06866666666666667,
+          -0.04566666666666666
+        ],
+        "perm_p": 1.0,
+        "n_items": 600,
+        "valid": true,
+        "p_holm": 1.0,
+        "supported": false
+      },
+      "H4 content persuades (real steps - mismatched)": {
+        "estimate": 0.10333333333333333,
+        "ci95": [
+          0.08765833333333334,
+          0.11933333333333332
+        ],
+        "perm_p": 0.0004997501249375312,
+        "n_items": 600,
+        "valid": true,
+        "p_holm": 0.001999000499750125,
+        "supported": true
+      }
+    },
+    "receiver_accuracy": {
+      "steps_redacted": 0.9116666666666666,
+      "steps_flipped": 0.7766666666666666,
+      "steps_mismatched": 0.893
+    }
+  }
+}
