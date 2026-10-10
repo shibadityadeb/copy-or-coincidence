@@ -54,3 +54,13 @@ still recover A's exact answer when A was wrong.
 
 ## Exclusions
 As in Experiment 7. Sample size fixed (600 items × 5 runs × 3 conditions per model); no optional stopping.
+
+## Amendment 1 (2026-10-10, before any Experiment 8 output was downloaded or inspected)
+A dry run on fake answers showed that the H2 statistic, [1(y = s) − p_B(s)] − [1(y = argued) − p_B(argued)],
+also becomes positive when a conflicting message merely makes the receiver abandon its usual answer without
+adopting the attached conclusion. H2 is therefore decomposed and its support rule tightened:
+- **H2a (follows the attached conclusion):** per-item mean of 1(y = s) − p_B(s) > 0.
+- **H2b (abandons the argued answer):** per-item mean of p_B(argued) − 1(y = argued) > 0.
+- The original combined statistic (= H2a + H2b) is still reported.
+- **H2 is supported only if H2a is supported** (Holm-adjusted p < 0.05 and CI excluding 0, with H2a taking H2's
+  place in the Holm family). H2b is reported with its CI as context.
