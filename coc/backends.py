@@ -58,6 +58,17 @@ ANSWER_SCHEMA = {
 
 # Plain-text prompt for models without a chat template (OLMo-3 base): same instructions and question.
 PLAIN_PROMPT = "{system}\n\nProblem:\n{user}\n\nResponse:\n"
+# Few-shot variant (one documented fix after the base-model pilot truncated 6.1% of answers): two neutral
+# worked examples showing the concise format. Deliberately no trick question and no "unanswerable" case.
+PLAIN_FEWSHOT_PROMPT = (
+    "{system}\n\n"
+    "Problem:\nA box holds 12 pencils. How many pencils are in 5 boxes?\n\n"
+    'Response:\n{{"steps": ["Each box holds 12 pencils.", "5 boxes hold 5 * 12 = 60 pencils."], "final": "60", "confidence": 0.95}}\n\n'
+    "Problem:\nEvery rose is a flower. Every flower is a plant. Mia's gift is a rose.\n"
+    "Is the following statement true or false? Mia's gift is a plant.\n\n"
+    'Response:\n{{"steps": ["Mia\'s gift is a rose.", "Every rose is a flower, and every flower is a plant.", '
+    '"So Mia\'s gift is a plant."], "final": "true", "confidence": 0.95}}\n\n'
+    "Problem:\n{user}\n\nResponse:\n")
 
 
 def _messages(r: Request) -> list[dict]:
@@ -124,10 +135,21 @@ class VLLMBackend(Backend):
     def __init__(self, repo: str, revision: str, dtype: str = "float16", tensor_parallel_size: int = 1,
                  max_model_len: int = 4096, gpu_memory_utilization: float = 0.90, max_num_seqs: int = 128,
                  enable_prefix_caching: bool = False, limit_mm_per_prompt: Optional[dict] = None,
-                 **engine_kwargs):
+                 patch_config: Optional[dict] = None, **engine_kwargs):
         import vllm
         from vllm import LLM
 
+        if patch_config:
+            # Load from a local snapshot whose config.json has these keys replaced (weights untouched).
+            # Used for OLMo-3 RL-Zero, whose config names its architecture "olmo2-retrofit".
+            import json as _json
+            from huggingface_hub import snapshot_download
+            local = snapshot_download(repo, revision=revision, local_dir=f"/tmp/patched-{repo.replace('/', '--')}")
+            cfg_path = f"{local}/config.json"
+            cfg = _json.load(open(cfg_path))
+            cfg.update(patch_config)
+            _json.dump(cfg, open(cfg_path, "w"), indent=2)
+            repo, revision = local, None
         mm = {"image": 0, "video": 0} if limit_mm_per_prompt is None else limit_mm_per_prompt
         self.llm = LLM(model=repo, revision=revision, dtype=dtype, tensor_parallel_size=tensor_parallel_size,
                        max_model_len=max_model_len, gpu_memory_utilization=gpu_memory_utilization,
@@ -151,6 +173,7 @@ class VLLMBackend(Backend):
                 return {"guided_decoding": GuidedDecodingParams(json=schema)}
 
         prompts = [PLAIN_PROMPT.format(system=r.system, user=r.user) if r.prompt_format == "plain" else
+                   PLAIN_FEWSHOT_PROMPT.format(system=r.system, user=r.user) if r.prompt_format == "plain_fewshot" else
                    self.tok.apply_chat_template(_messages(r), add_generation_prompt=True, tokenize=False,
                                                 enable_thinking=r.enable_thinking) for r in reqs]
         params = [SamplingParams(temperature=r.temperature, top_p=r.top_p, max_tokens=r.max_tokens,

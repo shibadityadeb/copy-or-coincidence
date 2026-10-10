@@ -18,5 +18,5 @@
   "enable_thinking": false,
   "structured_output": true,
   "training_stage": "pretraining only (Dolma 3)",
-  "prompt_format": "plain"
+  "prompt_format": "plain_fewshot"
 }

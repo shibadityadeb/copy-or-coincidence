@@ -137,6 +137,19 @@ What a conference reviewer will test, and how this project answers it. Each row 
 
 ## 5. Findings
 
+### 2026-10-10: Training-stage pilot, round 1 (60 items × 3, run twice; pass rule logged beforehand)
+| Stage | Accuracy (run 1 / 2) | Readable | Stable | Truncated | Verdict |
+|---|---|---|---|---|---|
+| Base (`Olmo-3-1025-7B`, plain prompt) | 73.3% / 73.3% | 93.9% | 100% | 6.1% | **fail** (readable < 95%) |
+| Instruct-SFT | 83.9% / 84.4% | 99.4% | 98.9% | 0% | pass |
+| Instruct-DPO | 92.2% / 92.2% | 100% | 100% | 0% | pass |
+| RL-Zero-Mix | — | — | — | — | **failed to load** (`olmo2-retrofit` model type unknown to transformers; `hf_overrides` applied too late) |
+Final Instruct on the same items: 93.0%. Base by family: logic 100%, trick questions 62% (lure 13% of all
+answers), math 94%. **One documented fix each** (allowed by the rule): Base → plain prompt with two neutral
+worked examples (no trick question, no "unanswerable" case) to curb rambling; RL-Zero → load from a local
+snapshot whose `config.json` names the architecture `Olmo3ForCausalLM` / `olmo3` (weights untouched). Rerun as
+round 2 (`experiments/pilot2_stage_*.json`).
+
 ### 2026-10-10: Experiment 8, what in a peer's reasoning persuades? (pre-registered in `prereg/exp8_mechanism.md`, amendment 1 before any data)
 27,000 receiver answers (3 conditions × 3 models × 3,000), Exp 7b protocol, pinned stack (Python 3.12.13,
 vLLM 0.30.0, torch 2.13.0; transformers 5.19.0 vs 5.18.0 in 7b, used only for prompt formatting). Validity: all

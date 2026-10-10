@@ -1,0 +1,13 @@
+{
+  "experiment_id": "pilot2_stage_rlzero",
+  "description": "Training-stage pilot (base + RL from verifiable rewards only (no SFT/DPO)): 60-item cep_v2 round-robin slice, K=3, run twice. Pass rule in docs/RESEARCH_LOG.md. Round 2 after one documented fix (base: few-shot plain prompt; rlzero: patched config name).",
+  "items": "datasets/cep_v2/items.jsonl",
+  "n_items": 60,
+  "k": 3,
+  "agents": [
+    "configs/agents/olmo3_7b_rlzero_B.json"
+  ],
+  "backend": "vllm",
+  "batch_size": 256,
+  "out_dir": "outputs/pilot_stages/rlzero_fix"
+}

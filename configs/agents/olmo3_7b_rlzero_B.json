@@ -10,7 +10,7 @@
     "max_num_seqs": 128,
     "enable_prefix_caching": false,
     "limit_mm_per_prompt": {},
-    "hf_overrides": {
+    "patch_config": {
       "architectures": [
         "Olmo3ForCausalLM"
       ],
